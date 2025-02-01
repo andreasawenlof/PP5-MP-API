@@ -9,6 +9,9 @@ class TrackList(generics.ListCreateAPIView):
     permission_class = [IsAuthenticated]
     queryset = Track.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TrackSerializer

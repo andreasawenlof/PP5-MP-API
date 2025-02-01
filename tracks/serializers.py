@@ -5,10 +5,12 @@ from django.contrib.auth.models import User
 
 
 class TrackSerializer(serializers.ModelSerializer):
-    album = serializers.ReadOnlyField(source='album.title')
-    instruments = serializers.PrimaryKeyRelatedField(
-        queryset=Instrument.objects.all(), many=True, required=False
-    )
+    # album = serializers.ReadOnlyField(source='album.title')
+    album = serializers.SerializerMethodField()
+    instruments = serializers.CharField(source='instruments.name')
+    # instruments = serializers.PrimaryKeyRelatedField(
+    #     queryset=Instrument.objects.all(), many=True, required=False
+    # )
     assigned_user = serializers.ReadOnlyField(source='assigned_user.username')
 
     class Meta:
