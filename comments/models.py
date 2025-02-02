@@ -9,14 +9,19 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_comments")
     track = models.ForeignKey(
-        Track, related_name="track_comments", on_delete=models.CASCADE)
-    album = models.ForeignKey(Album, related_name="album_comments",
-                              on_delete=models.CASCADE, null=True, blank=True)
+        # ✅ NOW OPTIONAL
+        Track, related_name="track_comments", on_delete=models.CASCADE, null=True, blank=True)
+    album = models.ForeignKey(
+        Album, related_name="album_comments", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"Comment by {self.author.username} on {self.track.title}"
-
     class Meta:
         ordering = ['-created_at']
+
+    def __str__(self):
+        if self.track:
+            return f"Comment by {self.author.username} on Track: {self.track.title}"
+        elif self.album:
+            return f"Comment by {self.author.username} on Album: {self.album.title}"
+        return f"Comment by {self.author.username}"  # Fallback just in case

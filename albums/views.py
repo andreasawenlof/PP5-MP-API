@@ -4,13 +4,13 @@ from .models import Album
 from .serializers import AlbumSerializer
 
 
-class AlbumList(generics.ListCreateAPIView):
+class AlbumListCreate(generics.ListCreateAPIView):
     serializer_class = AlbumSerializer
-    permission_class = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     queryset = Album.objects.all()
 
 
 class AlbumDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AlbumSerializer
-    permission_class = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     queryset = Album.objects.all()

@@ -1,5 +1,7 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
+from django.contrib.auth.models import User
+from django.apps import apps
 
 
 class Album(models.Model):
@@ -9,46 +11,48 @@ class Album(models.Model):
         ('completed', 'Completed and Reviewed'),
     ]
 
-    PROJECT_TYPE_CHOICES = [
-        ('quantity', 'Quantity'),
-        ('quality', 'Quality'),
-        ('custom', 'Custom Work'),
-        ('other', 'Other'),
-    ]
-
-    GENRE_CHOICES = [
-        ('rock', 'Rock'),
-        ('pop', 'Pop'),
-        ('electronic', 'Electronic'),
-        ('soundtrack', 'Soundtrack'),
-        ('other', 'Other'),
-    ]
-
-    MOOD_CHOICES = [
-        ('happy', 'Happy'),
-        ('sad', 'Sad'),
-        ('energetic', 'Energetic'),
-        ('relaxed', 'Relaxed'),
-        ('dramatic', 'Dramatic'),
-        ('hype', 'Hype'),
-        ('other', 'Other'),
-    ]
-
     title = models.CharField(max_length=255, blank=False, null=False)
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default='in_progress', blank=False, null=False)
+        max_length=20, choices=STATUS_CHOICES, default='in_progress'
+    )
     cover_art = CloudinaryField('image', blank=True, null=True)
-    project_type = models.CharField(
-        max_length=20, choices=PROJECT_TYPE_CHOICES, default='quantity', blank=False, null=False)
-    genre = models.CharField(
-        max_length=20, choices=GENRE_CHOICES, blank=False, null=False, default='other')
-    mood = models.CharField(
-        max_length=20, choices=MOOD_CHOICES, blank=False, null=False, default='other')
+
+    notes = models.TextField(blank=True, default="")
+
+    def get_project_type(self):
+        return apps.get_model('tracks', 'ProjectType')
+
+    def get_genre(self):
+        return apps.get_model('tracks', 'Genre')
+
+    def get_mood(self):
+        return apps.get_model('tracks', 'Mood')
+
+    project_type = models.ForeignKey(
+        'tracks.ProjectType', on_delete=models.SET_NULL, null=True, blank=True
+    )
+    genre = models.ForeignKey(
+        'tracks.Genre', on_delete=models.SET_NULL, null=True, blank=True
+    )
+    mood = models.ForeignKey(
+        'tracks.Mood', on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    # ✅ FIXED: Added a ManyToMany relationship for assigning tracks
+    tracks = models.ManyToManyField(
+        "tracks.Track", blank=True, related_name="albums")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['updated_at']
+        ordering = ['-updated_at']
 
     def __str__(self):
-        return f"{self.title} - {self.status} ({self.project_type})"
+        return f"{self.title} - {self.status}"
+
+    def add_track(self, track):
+        """✅ FIX: Import `Track` here to avoid circular import"""
+        from tracks.models import Track  # ✅ Lazy import to prevent circular import
+        if isinstance(track, Track):
+            self.tracks.add(track)

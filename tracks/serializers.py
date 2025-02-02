@@ -24,14 +24,15 @@ class ProjectTypeSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# ✅ Main TrackSerializer
 class TrackSerializer(serializers.ModelSerializer):
     album = serializers.PrimaryKeyRelatedField(
         queryset=Album.objects.all(), allow_null=True
     )
     instruments = serializers.SlugRelatedField(
         queryset=Instrument.objects.all(),
-        slug_field="name",
-        many=True,  # ✅ NOW ALLOWS MULTIPLE INSTRUMENTS
+        slug_field="name",  # ✅ Displays instrument names instead of IDs
+        many=True,  # ✅ Allows selecting multiple instruments
         required=False
     )
 
@@ -45,15 +46,48 @@ class TrackSerializer(serializers.ModelSerializer):
         queryset=ProjectType.objects.all(), slug_field="name"
     )
 
-    status = serializers.ReadOnlyField(source="get_status_display")
-    assigned_user = serializers.ReadOnlyField(source="assigned_user.username")
+    status = serializers.ChoiceField(  # ✅ Can now be updated!
+        choices=Track.STATUS_CHOICES
+    )
+    assigned_user = serializers.SlugRelatedField(
+        queryset=User.objects.all(),
+        slug_field="username",
+        required=False  # ✅ Optional, so it defaults if not provided
+    )
 
     class Meta:
         model = Track
         fields = "__all__"
 
+        fields = [
+            "title",
+            "album",
+            "instruments",
+            "genre",
+            "mood",
+            "project_type",
+            "status",
+            "assigned_user",
+            "notes",
+            "created_at",
+            "updated_at",
+        ]
+
     def create(self, validated_data):
-        """Ensure the assigned user is set to the creator if not provided."""
+        """✅ Ensure the assigned user is set to the creator if not provided."""
         if "assigned_user" not in validated_data:
             validated_data["assigned_user"] = self.context["request"].user
-        return super().create(validated_data)
+
+        # ✅ Fix: Handle ManyToMany Instruments properly
+        instruments_data = validated_data.pop("instruments", [])
+        track = super().create(validated_data)
+        track.instruments.set(instruments_data)  # ✅ Add multiple instruments
+        return track
+
+    def update(self, instance, validated_data):
+        """✅ Allow updating instruments & status properly in tracks."""
+        if "instruments" in validated_data:
+            instance.instruments.set(validated_data.pop(
+                "instruments"))  # ✅ Proper ManyToMany update
+
+        return super().update(instance, validated_data)
