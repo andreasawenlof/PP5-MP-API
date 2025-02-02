@@ -4,6 +4,7 @@ from albums.models import Album
 from profiles.models import Profile
 from instruments.models import Instrument
 from django.utils.text import slugify
+from django.db.models.signals import post_migrate
 
 
 class Genre(models.Model):
@@ -59,3 +60,24 @@ class Track(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.status} ({self.project_type})"
+
+
+DEFAULT_GENRES = ["Orchestral", "Electronic", "Rock", "Soundtrack"]
+DEFAULT_MOODS = ["Epic", "Mysterious", "Relaxing", "Hype"]
+DEFAULT_PROJECT_TYPES = ["Trailer Music",
+                         "Game Soundtrack", "Advertising", "Film Score"]
+
+
+def populate_defaults(sender, **kwargs):
+    # ✅ Import inside function to prevent circular errors
+    from tracks.models import Genre, Mood, ProjectType
+
+    for genre in DEFAULT_GENRES:
+        Genre.objects.get_or_create(name=genre)
+    for mood in DEFAULT_MOODS:
+        Mood.objects.get_or_create(name=mood)
+    for project_type in DEFAULT_PROJECT_TYPES:
+        ProjectType.objects.get_or_create(name=project_type)
+
+
+post_migrate.connect(populate_defaults)

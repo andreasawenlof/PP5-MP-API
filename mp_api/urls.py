@@ -16,17 +16,34 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from tracks.views import (
+    MoodListCreate, MoodDetail,
+    GenreListCreate, GenreDetail,
+    ProjectTypeListCreate, ProjectTypeDetail)
 
 urlpatterns = [
-    # path('', root_route),
+    # Admin & Authentication
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('tracks/', include('tracks.urls')),
-    path('albums/', include('albums.urls')),
-    path('profiles/', include('profiles.urls')),
-    path('instruments/', include('instruments.urls')),
-    path('comments/', include('comments.urls')),
-    path('reviews/', include('reviews.urls')),
+    path('api/auth/', include('rest_framework.urls')),
+    path('api/auth/dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('api/auth/dj-rest-auth/registration/',
+         include('dj_rest_auth.registration.urls')),
+
+    # Main API Endpoints
+    path('api/tracks/', include('tracks.urls')),
+    path('api/albums/', include('albums.urls')),
+    path('api/profiles/', include('profiles.urls')),
+    path('api/instruments/', include('instruments.urls')),
+    path('api/comments/', include('comments.urls')),
+    path('api/reviews/', include('reviews.urls')),
+
+    # ✅ Moods, Genres, and Project Types - Kept in Main URLs
+    path("api/moods/", MoodListCreate.as_view(), name="mood-list"),
+    path("api/moods/<int:pk>/", MoodDetail.as_view(), name="mood-detail"),
+    path("api/genres/", GenreListCreate.as_view(), name="genre-list"),
+    path("api/genres/<int:pk>/", GenreDetail.as_view(), name="genre-detail"),
+    path("api/project-types/", ProjectTypeListCreate.as_view(),
+         name="project-type-list"),
+    path("api/project-types/<int:pk>/",
+         ProjectTypeDetail.as_view(), name="project-type-detail"),
 ]

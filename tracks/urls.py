@@ -1,7 +1,17 @@
 from django.urls import path
-from .views import TrackList, TrackDetail
+from .views import (
+    TrackListCreate,
+    TrackDetail,
+    MoodListCreate,
+    GenreListCreate,
+    ProjectTypeListCreate,
+    MoodDetail,
+    GenreDetail,
+    ProjectTypeDetail,
+)
 
 urlpatterns = [
-    path('', TrackList.as_view(), name='track-list'),
-    path('<int:pk>/', TrackDetail.as_view(), name='track-detail'),
+    path("", TrackListCreate.as_view(), name="track-list"),
+    path("<int:pk>/", TrackDetail.as_view(), name="track-detail"),
+
 ]
