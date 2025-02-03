@@ -2,7 +2,7 @@ from rest_framework import generics
 from .models import Review, ReviewHistory
 from .serializers import ReviewSerializer, ReviewHistorySerializer
 from rest_framework.permissions import IsAuthenticated
-from mp_api.permissions import IsOwnerOrReadOnly, IsEditorOrOwner
+from mp_api.permissions import IsOwnerOrReadOnly, IsComposerOrOwner
 
 
 class ReviewListCreate(generics.ListCreateAPIView):
@@ -40,7 +40,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ReviewHistoryListCreate(generics.ListCreateAPIView):
     serializer_class = ReviewHistorySerializer
-    permission_classes = [IsAuthenticated, IsEditorOrOwner]
+    permission_classes = [IsAuthenticated, IsComposerOrOwner]
 
     def get_queryset(self):
         """
@@ -58,7 +58,7 @@ class ReviewHistoryListCreate(generics.ListCreateAPIView):
 
 class ReviewHistoryDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewHistorySerializer
-    permission_classes = [IsAuthenticated, IsEditorOrOwner]
+    permission_classes = [IsAuthenticated, IsComposerOrOwner]
 
     def get_queryset(self):
         """

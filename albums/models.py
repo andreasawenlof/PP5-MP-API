@@ -7,10 +7,10 @@ from django.apps import apps
 class Album(models.Model):
     STATUS_CHOICES = [
         ('not_started', 'Not Started'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('on_hold', 'On Hold'),
-        ('cancelled', 'Cancelled'),
+        ('in_production', 'In Production'),
+        ('ready_for_mixing', 'Ready for Mixing'),
+        ('ready_for_review', 'Ready for Review'),
+        ('completed_and_reviewed', 'Completed and Reviewed'),
     ]
 
     title = models.CharField(max_length=255, blank=False, null=False)
@@ -30,6 +30,8 @@ class Album(models.Model):
     mood = models.ForeignKey(
         "tracks.Mood", on_delete=models.SET_NULL, null=True, blank=True
     )
+    tracks = models.ManyToManyField(
+        'tracks.Track', related_name='albums', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -45,27 +47,22 @@ class Album(models.Model):
         Automatically updates the status, project_type, genre, and mood of all tracks 
         in this album when the album is changed.
         """
-        # Get the current state of the album from the database
-        if self.pk:
+        is_new = self._state.adding
+        fields_to_update = []
+
+        if not is_new:
             old_album = Album.objects.get(pk=self.pk)
-            fields_to_update = []
+            for field in ['status', 'project_type', 'genre', 'mood']:
+                if getattr(old_album, field) != getattr(self, field):
+                    fields_to_update.append(field)
 
-            if old_album.status != self.status:
-                fields_to_update.append('status')
-            if old_album.project_type != self.project_type:
-                fields_to_update.append('project_type')
-            if old_album.genre != self.genre:
-                fields_to_update.append('genre')
-            if old_album.mood != self.mood:
-                fields_to_update.append('mood')
-
-        # Save the album first
         super().save(*args, **kwargs)
 
-        # Update associated tracks if necessary
-        if self.pk and fields_to_update:
-            Track = apps.get_model('tracks', 'Track')
-            tracks = Track.objects.filter(album=self)
+        Track = apps.get_model('tracks', 'Track')
+
+        # Update associated tracks
+        if fields_to_update:
+            tracks = self.tracks.all()
             if tracks.exists():
                 tracks_to_update = []
                 for track in tracks:
@@ -77,7 +74,9 @@ class Album(models.Model):
                     if updated:
                         tracks_to_update.append(track)
 
-                # Optimized DB update (only updates changed tracks)
                 if tracks_to_update:
                     Track.objects.bulk_update(
                         tracks_to_update, fields_to_update)
+
+        # Update the album field of associated tracks
+        self.tracks.update(album=self)

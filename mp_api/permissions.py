@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class IsEditorOrOwner(permissions.BasePermission):
+class IsComposerOrOwner(permissions.BasePermission):
     """
     Custom permission to only allow editors
     """

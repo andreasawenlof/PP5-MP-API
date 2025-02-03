@@ -25,30 +25,47 @@ class ProjectTypeSerializer(serializers.ModelSerializer):
 
 class TrackSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    assigned_composer = serializers.SlugRelatedField(
-        slug_field='username',
+    assigned_composer = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.filter(profile__is_composer=True),
         required=False,
         allow_null=True
     )
+    assigned_composer_username = serializers.CharField(
+        source='assigned_composer.username', read_only=True)
+
     album = serializers.PrimaryKeyRelatedField(
         queryset=Album.objects.all(), allow_null=True
     )
-    instruments = serializers.SlugRelatedField(
+    album_title = serializers.CharField(source='album.title', read_only=True)
+
+    instruments = serializers.PrimaryKeyRelatedField(
         queryset=Instrument.objects.all(),
-        slug_field="name",
         many=True,
         required=False
     )
-    genre = serializers.SlugRelatedField(
-        queryset=Genre.objects.all(), slug_field="name"
+    instrument_names = serializers.SlugRelatedField(
+        source='instruments',
+        slug_field='name',
+        many=True,
+        read_only=True
     )
-    mood = serializers.SlugRelatedField(
-        queryset=Mood.objects.all(), slug_field="name"
+
+    genre = serializers.PrimaryKeyRelatedField(
+        queryset=Genre.objects.all()
     )
-    project_type = serializers.SlugRelatedField(
-        queryset=ProjectType.objects.all(), slug_field="name"
+    genre_name = serializers.CharField(source='genre.name', read_only=True)
+
+    mood = serializers.PrimaryKeyRelatedField(
+        queryset=Mood.objects.all()
     )
+    mood_name = serializers.CharField(source='mood.name', read_only=True)
+
+    project_type = serializers.PrimaryKeyRelatedField(
+        queryset=ProjectType.objects.all()
+    )
+    project_type_name = serializers.CharField(
+        source='project_type.name', read_only=True)
+
     status = serializers.ChoiceField(choices=Track.STATUS_CHOICES)
     vocals_status = serializers.ChoiceField(
         choices=Track.VOCALS_STATUS_CHOICES, allow_null=True, required=False)
@@ -56,9 +73,10 @@ class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
         fields = [
-            "id", "owner", "title", "album", "instruments", "genre", "mood", "project_type",
+            "id", "owner", "title", "album", "album_title", "instruments", "instrument_names",
+            "genre", "genre_name", "mood", "mood_name", "project_type", "project_type_name",
             "status", "vocals_needed", "vocals_status", "assigned_composer",
-            "notes", "created_at", "updated_at",
+            "assigned_composer_username", "notes", "created_at", "updated_at",
         ]
 
     def validate(self, data):
