@@ -3,33 +3,47 @@ from rest_framework import permissions
 
 class IsComposerOrOwner(permissions.BasePermission):
     """
-    Custom permission to only allow editors
+    Composers have full access, owners can edit their own objects.
     """
 
     def has_permission(self, request, view):
-        if request.user.profile.is_composer:  # Check if user is an editor
-            return True
-        return False
+        return request.user.profile.is_composer  # ✅ Full access for composers
+
+    def has_object_permission(self, request, view, obj):
+        # ✅ Owners can modify their own objects
+        return request.user.profile.is_composer or obj.owner == request.user
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Custom permission to only allow the owner of a profile to edit it.
+    Only allow the owner of a profile to edit it.
     """
 
     def has_object_permission(self, request, view, obj):
-        # Read permissions are granted to any request
+        # ✅ Read permissions granted to everyone
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Write permissions are only allowed to the owner of the profile
+        # ✅ Only the owner can modify
         return obj.owner == request.user
 
 
 class IsReviewer(permissions.BasePermission):
     """
-    Custom permission to allow only reviewers to view and edit their reviews.
+    Reviewers can only access "Ready for Review" tracks.
+    Once they submit feedback, they **cannot** edit or delete it.
     """
 
     def has_permission(self, request, view):
-        return request.user.profile.is_reviewer  # Only reviewers can pass
+        return request.user.profile.is_reviewer  # ✅ Only reviewers can pass
+
+    def has_object_permission(self, request, view, obj):
+        # ✅ Reviewers can see only tracks marked as "Ready for Review"
+        if hasattr(obj, 'status') and obj.status == "ready_for_review":
+            return True
+
+        # ❌ Reviews cannot be edited or deleted after submission
+        if hasattr(obj, "reviewed_at"):
+            return request.method in permissions.SAFE_METHODS  # Read-only
+
+        return False  # Deny everything else

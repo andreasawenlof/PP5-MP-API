@@ -83,6 +83,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 
@@ -107,6 +108,7 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'cloudinary',
     'cloudinary_storage',
+    'django_filters',
 
     # Local Apps
     'tracks',

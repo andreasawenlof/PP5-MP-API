@@ -4,119 +4,81 @@ from albums.models import Album
 from instruments.models import Instrument
 from django.contrib.auth.models import User
 
+# Reusable serializers
+
 
 class MoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mood
-        fields = "__all__"
+        fields = ["id", "name"]
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = "__all__"
+        fields = ["id", "name"]
 
 
 class ProjectTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectType
-        fields = "__all__"
+        fields = ["id", "name"]
+
+# Main Track Serializer
 
 
 class TrackSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    assigned_composer = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.filter(profile__is_composer=True),
-        required=False,
-        allow_null=True
-    )
-    assigned_composer_username = serializers.CharField(
-        source='assigned_composer.username', read_only=True)
+    owner = serializers.ReadOnlyField(source="owner.username")
 
     album = serializers.PrimaryKeyRelatedField(
-        queryset=Album.objects.all(), allow_null=True
-    )
-    album_title = serializers.CharField(source='album.title', read_only=True)
+        queryset=Album.objects.all(), allow_null=True)
+    album_name = serializers.CharField(source="album.title", read_only=True)
 
     instruments = serializers.PrimaryKeyRelatedField(
-        queryset=Instrument.objects.all(),
-        many=True,
-        required=False
-    )
+        queryset=Instrument.objects.all(), many=True, required=False)
     instrument_names = serializers.SlugRelatedField(
-        source='instruments',
-        slug_field='name',
-        many=True,
-        read_only=True
-    )
+        source="instruments", slug_field="name", many=True, read_only=True)
 
     genre = serializers.PrimaryKeyRelatedField(
-        queryset=Genre.objects.all()
-    )
-    genre_name = serializers.CharField(source='genre.name', read_only=True)
+        queryset=Genre.objects.all(), allow_null=True)
+    genre_name = serializers.CharField(source="genre.name", read_only=True)
 
     mood = serializers.PrimaryKeyRelatedField(
-        queryset=Mood.objects.all()
-    )
-    mood_name = serializers.CharField(source='mood.name', read_only=True)
+        queryset=Mood.objects.all(), allow_null=True)
+    mood_name = serializers.CharField(source="mood.name", read_only=True)
 
     project_type = serializers.PrimaryKeyRelatedField(
-        queryset=ProjectType.objects.all()
-    )
+        queryset=ProjectType.objects.all(), allow_null=True)
     project_type_name = serializers.CharField(
-        source='project_type.name', read_only=True)
+        source="project_type.name", read_only=True)
 
-    status = serializers.ChoiceField(choices=Track.STATUS_CHOICES)
-    vocals_status = serializers.ChoiceField(
-        choices=Track.VOCALS_STATUS_CHOICES, allow_null=True, required=False)
+    assigned_composer = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(
+        profile__is_composer=True), required=False, allow_null=True)
+    assigned_composer_username = serializers.CharField(
+        source="assigned_composer.username", read_only=True)
 
     class Meta:
         model = Track
         fields = [
-            "id", "owner", "title", "album", "album_title", "instruments", "instrument_names",
+            "id", "owner", "title", "album", "album_name", "instruments", "instrument_names",
             "genre", "genre_name", "mood", "mood_name", "project_type", "project_type_name",
-            "status", "vocals_needed", "vocals_status", "assigned_composer",
-            "assigned_composer_username", "notes", "created_at", "updated_at",
+            "status", "vocals_needed", "vocals_status", "assigned_composer", "assigned_composer_username",
+            "notes", "created_at", "updated_at",
         ]
 
-    def validate(self, data):
-        vocals_needed = data.get('vocals_needed')
-        vocals_status = data.get('vocals_status')
-
-        # If this is an update, get the current values if not provided
-        if self.instance:
-            vocals_needed = vocals_needed if vocals_needed is not None else self.instance.vocals_needed
-            vocals_status = vocals_status if 'vocals_status' in data else self.instance.vocals_status
-
-        if vocals_needed is False:
-            if vocals_status is not None:
-                raise serializers.ValidationError(
-                    "Cannot set vocals_status when vocals are not needed.")
-            data['vocals_status'] = None
-        elif vocals_needed is True and vocals_status is None:
-            data['vocals_status'] = 'vocals_in_progress'
-
-        return data
-
-    def create(self, validated_data):
-        instruments_data = validated_data.pop("instruments", [])
-
-        # Ensure assigned_composer is set
-        if "assigned_composer" not in validated_data:
-            validated_data["assigned_composer"] = self.context["request"].user
-
-        # Create the track instance
-        track = Track.objects.create(**validated_data)
-
-        # Set the instruments
-        track.instruments.set(instruments_data)
-
-        return track
-
     def update(self, instance, validated_data):
+        # Handle instruments
         if "instruments" in validated_data:
             instance.instruments.set(validated_data.pop("instruments"))
-        return super().update(instance, validated_data)
+
+        # Update all other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
+# Bulk Update Serializer (Ensure this is at the bottom)
 
 
 class BulkTrackUpdateSerializer(serializers.Serializer):
@@ -131,27 +93,27 @@ class BulkTrackUpdateSerializer(serializers.Serializer):
         choices=Track.VOCALS_STATUS_CHOICES, allow_null=True, required=False)
     album = serializers.PrimaryKeyRelatedField(
         queryset=Album.objects.all(), allow_null=True, required=False)
-    genre = serializers.SlugRelatedField(
-        queryset=Genre.objects.all(), slug_field="name", required=False)
-    mood = serializers.SlugRelatedField(
-        queryset=Mood.objects.all(), slug_field="name", required=False)
-    project_type = serializers.SlugRelatedField(
-        queryset=ProjectType.objects.all(), slug_field="name", required=False)
-    assigned_composer = serializers.SlugRelatedField(
-        queryset=User.objects.all(), slug_field="username", required=False)
+    genre = serializers.PrimaryKeyRelatedField(
+        queryset=Genre.objects.all(), allow_null=True, required=False)
+    mood = serializers.PrimaryKeyRelatedField(
+        queryset=Mood.objects.all(), allow_null=True, required=False)
+    project_type = serializers.PrimaryKeyRelatedField(
+        queryset=ProjectType.objects.all(), allow_null=True, required=False)
 
     def validate(self, data):
-        if len(data) == 1:  # Only track_ids provided
+        """Ensure at least one field besides track_ids is being updated"""
+        if len(data) == 1:
             raise serializers.ValidationError(
                 "At least one field to update must be provided.")
         return data
 
-    def create(self, validated_data):
-        # This serializer is not meant to create new objects
-        raise NotImplementedError(
-            "BulkTrackUpdateSerializer does not support creation.")
-
     def update(self, instance, validated_data):
-        track_ids = validated_data.pop('track_ids')
+        """Perform bulk update while ensuring assigned_composer is untouched"""
+        track_ids = validated_data.pop("track_ids")
+
+        # Prevent assigned_composer updates in bulk
+        if "assigned_composer" in validated_data:
+            validated_data.pop("assigned_composer")
+
         Track.bulk_update_tracks(track_ids, **validated_data)
         return Track.objects.filter(id__in=track_ids)

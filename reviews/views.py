@@ -11,31 +11,35 @@ class ReviewListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        Editors see all reviews.
-        Reviewers see only their assigned reviews.
+        - Reviewers see all reviews for 'ready_for_review' tracks.
+        - Composers see everything.
         """
         user = self.request.user
-        if user.profile.is_editor:
+        if user.profile.is_composer:
             return Review.objects.all()
-        return Review.objects.filter(reviewer=user)
+        return Review.objects.filter(track__status="ready_for_review")
 
     def perform_create(self, serializer):
+        """
+        - Assigns reviewer as the logged-in user.
+        - Makes sure review is locked after submission.
+        """
         serializer.save(reviewer=self.request.user)
 
 
-class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+class ReviewDetail(generics.RetrieveAPIView):  # ✅ Read-Only View
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Editors see all reviews.
-        Reviewers see only their assigned reviews.
+        - Reviewers see all reviews for 'ready_for_review' tracks.
+        - Composers see everything.
         """
         user = self.request.user
-        if user.profile.is_editor:
+        if user.profile.is_composer:
             return Review.objects.all()
-        return Review.objects.filter(reviewer=user)
+        return Review.objects.filter(track__status="ready_for_review")
 
 
 class ReviewHistoryListCreate(generics.ListCreateAPIView):
@@ -44,28 +48,28 @@ class ReviewHistoryListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        Editors see all review history.
-        Reviewers see only history related to their reviews.
+        - Reviewers and composers can see review history for 'ready_for_review' tracks.
+        - Only composers see the revision count.
         """
         user = self.request.user
-        if user.profile.is_editor:
+        if user.profile.is_composer:
             return ReviewHistory.objects.all()
-        return ReviewHistory.objects.filter(review__reviewer=user)
+        return ReviewHistory.objects.filter(review__track__status="ready_for_review")
 
     def perform_create(self, serializer):
         serializer.save(editor=self.request.user)
 
 
-class ReviewHistoryDetail(generics.RetrieveUpdateDestroyAPIView):
+class ReviewHistoryDetail(generics.RetrieveAPIView):  # ✅ Read-Only View
     serializer_class = ReviewHistorySerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
 
     def get_queryset(self):
         """
-        Editors see all review history.
-        Reviewers see only history related to their reviews.
+        - Reviewers and composers can see review history for 'ready_for_review' tracks.
+        - Only composers see the revision count.
         """
         user = self.request.user
-        if user.profile.is_editor:
+        if user.profile.is_composer:
             return ReviewHistory.objects.all()
-        return ReviewHistory.objects.filter(review__reviewer=user)
+        return ReviewHistory.objects.filter(review__track__status="ready_for_review")

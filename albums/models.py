@@ -22,14 +22,11 @@ class Album(models.Model):
     notes = models.TextField(blank=True, default="")
 
     project_type = models.ForeignKey(
-        "tracks.ProjectType", on_delete=models.SET_NULL, null=True, blank=True
-    )
+        "tracks.ProjectType", on_delete=models.SET_NULL, null=True, blank=True)
     genre = models.ForeignKey(
-        "tracks.Genre", on_delete=models.SET_NULL, null=True, blank=True
-    )
+        "tracks.Genre", on_delete=models.SET_NULL, null=True, blank=True)
     mood = models.ForeignKey(
-        "tracks.Mood", on_delete=models.SET_NULL, null=True, blank=True
-    )
+        "tracks.Mood", on_delete=models.SET_NULL, null=True, blank=True)
     tracks = models.ManyToManyField(
         'tracks.Track', related_name='albums', blank=True)
 
@@ -43,10 +40,7 @@ class Album(models.Model):
         return f"{self.title} - {self.status}"
 
     def save(self, *args, **kwargs):
-        """
-        Automatically updates the status, project_type, genre, and mood of all tracks 
-        in this album when the album is changed.
-        """
+        """ Auto-updates the status, project_type, genre, and mood of all tracks in this album """
         is_new = self._state.adding
         fields_to_update = []
 
@@ -60,23 +54,11 @@ class Album(models.Model):
 
         Track = apps.get_model('tracks', 'Track')
 
-        # Update associated tracks
         if fields_to_update:
-            tracks = self.tracks.all()
-            if tracks.exists():
-                tracks_to_update = []
-                for track in tracks:
-                    updated = False
-                    for field in fields_to_update:
-                        if getattr(track, field) != getattr(self, field):
-                            setattr(track, field, getattr(self, field))
-                            updated = True
-                    if updated:
-                        tracks_to_update.append(track)
-
-                if tracks_to_update:
-                    Track.objects.bulk_update(
-                        tracks_to_update, fields_to_update)
-
-        # Update the album field of associated tracks
-        self.tracks.update(album=self)
+            tracks_to_update = list(self.tracks.all())
+            for track in tracks_to_update:
+                for field in fields_to_update:
+                    setattr(track, field, getattr(self, field))
+                track.album = self  # Maintain album relationship
+            Track.objects.bulk_update(
+                tracks_to_update, fields_to_update + ["album"])

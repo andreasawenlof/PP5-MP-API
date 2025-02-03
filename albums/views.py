@@ -1,15 +1,21 @@
-from rest_framework import generics
+from rest_framework import generics, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import QuerySet
 from .models import Album
 from .serializers import AlbumSerializer
 from mp_api.permissions import IsComposerOrOwner
 
 
 class AlbumListCreate(generics.ListCreateAPIView):
-    queryset: QuerySet[Album] = Album.objects.all()
+    queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
+
+    filter_backends = [DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['status', 'genre', 'mood', 'project_type']
+    ordering_fields = ['created_at', 'updated_at', 'title']
+    search_fields = ['title', 'notes']
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -19,7 +25,7 @@ class AlbumListCreate(generics.ListCreateAPIView):
 
 
 class AlbumDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset: QuerySet[Album] = Album.objects.all()
+    queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
 

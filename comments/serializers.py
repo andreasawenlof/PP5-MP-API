@@ -18,7 +18,7 @@ class CommentSerializer(serializers.ModelSerializer):
     is_composer = serializers.BooleanField(
         source='owner.profile.is_composer', read_only=True
     )
-    is_reviwer = serializers.BooleanField(
+    is_reviewer = serializers.BooleanField(
         source='owner.profile.is_reviewer', read_only=True
     )
 
@@ -46,7 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = [
-            'id', 'owner', 'profile_image', 'track', 'album', 'content', 'is_composer', 'is_reviwer',
+            'id', 'owner', 'profile_image', 'track', 'album', 'content', 'is_composer', 'is_reviewer',
             'created_at', 'updated_at'
         ]
 

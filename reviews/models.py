@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 
 
 class Review(models.Model):
-
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('approved', 'Approved'),
@@ -12,13 +11,16 @@ class Review(models.Model):
     ]
 
     track = models.ForeignKey(
-        Track, related_name='reviews', on_delete=models.CASCADE)
+        Track, related_name='reviews', on_delete=models.CASCADE
+    )
     reviewer = models.ForeignKey(
-        User, related_name='reviews', on_delete=models.CASCADE)
+        User, related_name='reviews', on_delete=models.CASCADE
+    )
     feedback = models.TextField()
-    comment = models.TextField(blank=True, null=True)
+    feedback = models.TextField(blank=True, null=True)
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default='pending')
+        max_length=20, choices=STATUS_CHOICES, default='pending'
+    )
     reviewed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -29,12 +31,14 @@ class Review(models.Model):
 
 
 class ReviewHistory(models.Model):
-    review = models.ForeignKey(
-        Review, related_name="history", on_delete=models.CASCADE)
+    feedback = models.ForeignKey(
+        Review, related_name="history", on_delete=models.CASCADE
+    )
     editor = models.ForeignKey(
-        User, related_name="review_edits", on_delete=models.CASCADE)
+        User, related_name="review_edits", on_delete=models.CASCADE
+    )
     edited_at = models.DateTimeField(auto_now_add=True)
-    updated_feedback = models.TextField()  # Updated feedback text after revisions
+    updated_feedback = models.TextField()
     revision_number = models.IntegerField(default=1)
 
     class Meta:
