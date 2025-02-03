@@ -9,7 +9,7 @@ class Profile(models.Model):
         User, on_delete=models.CASCADE, related_name="profile")
     display_name = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    is_editor = models.BooleanField(default=False)
+    is_composer = models.BooleanField(default=False)
     is_reviewer = models.BooleanField(default=False)
     avatar = CloudinaryField(
         'image', blank=True, null=True, default='default_profile_lhtmj4')

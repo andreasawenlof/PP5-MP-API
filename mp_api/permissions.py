@@ -7,7 +7,7 @@ class IsEditorOrOwner(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user.profile.is_editor:  # Check if user is an editor
+        if request.user.profile.is_composer:  # Check if user is an editor
             return True
         return False
 
