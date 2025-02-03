@@ -4,6 +4,7 @@ from tracks.models import Track, Genre, Mood, ProjectType
 
 
 class AlbumSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(), slug_field="name", required=False
     )
