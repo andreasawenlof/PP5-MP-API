@@ -1,23 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
+from tracks.models import Track
+from albums.models import Album
 
 
 class Comment(models.Model):
     """A single comment linked to either a Track OR an Album (not both)."""
-    content = models.TextField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_comments"
     )
+    content = models.TextField()
+
     track = models.ForeignKey(
-        "tracks.Track",  # ✅ Lazy import to avoid circular dependencies
+        Track,
         related_name="track_comments",
         on_delete=models.CASCADE, null=True, blank=True
     )
-    album = models.ForeignKey(
-        "albums.Album",  # ✅ Lazy import to avoid circular dependencies
-        related_name="album_comments",
-        on_delete=models.CASCADE, null=True, blank=True
-    )
+    album = models.ForeignKey(Album,
+                              related_name="album_comments",
+                              on_delete=models.CASCADE, null=True, blank=True
+                              )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

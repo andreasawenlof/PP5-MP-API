@@ -1,8 +1,8 @@
-from .serializers import ProfileSerializer
 from rest_framework import generics
-from .models import Profile
-from mp_api.permissions import IsOwnerOrReadOnly, IsEditorOrOwner
 from rest_framework.permissions import IsAuthenticated
+from mp_api.permissions import IsOwnerOrReadOnly, IsEditorOrOwner
+from .serializers import ProfileSerializer
+from .models import Profile
 
 
 class ProfileList(generics.ListAPIView):

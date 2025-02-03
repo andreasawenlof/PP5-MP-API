@@ -4,17 +4,15 @@ from django.contrib.auth.models import User
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
-        slug_field="username"
-    )
+    author = serializers.ReadOnlyField(source='owner.username')
+    profile_id = serializers.ReadOnlyField(source='owner.profile.id')
     profile_image = serializers.CharField(
-        source='author.profile.avatar.url', read_only=True
+        source='owner.profile.avatar.url', read_only=True
     )
 
     class Meta:
         model = Comment
         fields = [
-            'id', 'content', 'author', 'profile_image', 'track', 'album',
+            'id', 'content', 'author', 'profile_id', 'profile_image', 'track', 'album',
             'created_at', 'updated_at'
         ]
