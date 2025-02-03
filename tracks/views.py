@@ -1,16 +1,18 @@
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 from .models import Track, Mood, Genre, ProjectType
 from .serializers import TrackSerializer, MoodSerializer, GenreSerializer, ProjectTypeSerializer, BulkTrackUpdateSerializer
 from mp_api.permissions import IsComposerOrOwner, IsReviewer
-import logging
-
-logger = logging.getLogger(__name__)
 
 
-class TrackViewSet(viewsets.ModelViewSet):
+class TrackListCreate(generics.ListCreateAPIView):
+    """
+    - Composers: See all tracks & create new ones.
+    - Reviewers: See only 'ready_for_review' tracks, NO CREATE PERMISSION.
+    - Normal users: See nothing.
+    """
     serializer_class = TrackSerializer
     permission_classes = [IsAuthenticated]
 
@@ -22,59 +24,85 @@ class TrackViewSet(viewsets.ModelViewSet):
             return Track.objects.filter(status="ready_for_review")
         return Track.objects.none()
 
-    def get_permissions(self):
-        if self.action in ["create", "update", "partial_update", "destroy"]:
-            self.permission_classes = [IsAuthenticated, IsComposerOrOwner]
-        elif self.action == "list":
-            self.permission_classes = [IsAuthenticated]
-        return super().get_permissions()
+    def perform_create(self, serializer):
+        if not self.request.user.profile.is_composer:
+            raise NotFound()  # ✅ Reviewers won’t even see the create option.
+        serializer.save()
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        logger.info(f"Retrieving track data: {serializer.data}")
-        return Response(serializer.data)
+
+class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    - Composers: Can view, update, and delete.
+    - Reviewers: Can ONLY view 'ready_for_review' tracks (NO EDIT/DELETE).
+    - 🚫 If a reviewer tries to access a track they shouldn't, they get a 404 (Not Found).
+    """
+    serializer_class = TrackSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """
+        ✅ Ensures reviewers NEVER see tracks they shouldn’t.
+        ✅ NO MORE 403 Forbidden – Reviewers get clean 404 (Not Found).
+        """
+        user = self.request.user
+        track_id = self.kwargs["pk"]
+
+        try:
+            obj = Track.objects.get(pk=track_id)
+        except Track.DoesNotExist:
+            raise NotFound()
+
+        # ✅ Composers can see everything
+        if user.profile.is_composer:
+            return obj
+
+        # ✅ Reviewers can ONLY see 'ready_for_review' tracks
+        if user.profile.is_reviewer and obj.status == "ready_for_review":
+            return obj
+
+        raise NotFound()  # ✅ Acts like the track never existed (NO 403!)
 
     def update(self, request, *args, **kwargs):
-        logger.info(f"Updating track with data: {request.data}")
-        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        logger.info(f"Updated track data: {serializer.data}")
-        return Response(serializer.data)
+        if request.user.profile.is_reviewer:
+            raise NotFound()  # ✅ Reviewers CANNOT edit
+        return super().update(request, *args, **kwargs)
 
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if request.user.profile.is_reviewer:
+            raise NotFound()  # ✅ Reviewers CANNOT delete
+        return super().destroy(request, *args, **kwargs)
 
 
-class MoodViewSet(viewsets.ModelViewSet):
+# ✅ MOODS
+class MoodListCreate(generics.ListCreateAPIView):
+    queryset = Mood.objects.all()
     serializer_class = MoodSerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
-    queryset = Mood.objects.all()
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+# ✅ GENRES
+class GenreListCreate(generics.ListCreateAPIView):
+    queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
-    queryset = Genre.objects.all()
 
 
-class ProjectTypeViewSet(viewsets.ModelViewSet):
+# ✅ PROJECT TYPES
+class ProjectTypeListCreate(generics.ListCreateAPIView):
+    queryset = ProjectType.objects.all()
     serializer_class = ProjectTypeSerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
-    queryset = ProjectType.objects.all()
 
 
-class BulkTrackUpdateView(APIView):
+# ✅ BULK UPDATES
+class BulkTrackUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    serializer_class = BulkTrackUpdateSerializer
 
-    def patch(self, request, *args, **kwargs):
-        serializer = BulkTrackUpdateSerializer(data=request.data)
-        if serializer.is_valid():
-            updated_tracks = serializer.update(None, serializer.validated_data)
-            return Response(TrackSerializer(updated_tracks, many=True).data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        updated_tracks = serializer.update(None, serializer.validated_data)
+        return Response(TrackSerializer(updated_tracks, many=True).data)

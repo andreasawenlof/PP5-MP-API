@@ -1,18 +1,16 @@
 from django.urls import path
-from rest_framework.routers import DefaultRouter
 from .views import (
-    TrackViewSet, MoodViewSet, GenreViewSet, ProjectTypeViewSet, BulkTrackUpdateView
+    TrackListCreate, TrackDetail, MoodListCreate, GenreListCreate,
+    ProjectTypeListCreate, BulkTrackUpdateView
 )
 
-# DRF Router for standard CRUD views
-router = DefaultRouter()
-router.register(r'tracks', TrackViewSet, basename="tracks")
-router.register(r'moods', MoodViewSet, basename="moods")
-router.register(r'genres', GenreViewSet, basename="genres")
-router.register(r'project-types', ProjectTypeViewSet, basename="project-types")
-
-# Custom path for bulk updates
-urlpatterns = router.urls + [
-    path("tracks/bulk-update/", BulkTrackUpdateView.as_view(),
-         name="bulk-track-update"),
+urlpatterns = [
+    path('tracks/', TrackListCreate.as_view(), name='track-list'),
+    path('tracks/<int:pk>/', TrackDetail.as_view(), name='track-detail'),
+    path('tracks/bulk-update/', BulkTrackUpdateView.as_view(),
+         name='bulk-track-update'),
+    path('moods/', MoodListCreate.as_view(), name='mood-list'),
+    path('genres/', GenreListCreate.as_view(), name='genre-list'),
+    path('project-types/', ProjectTypeListCreate.as_view(),
+         name='project-type-list'),
 ]

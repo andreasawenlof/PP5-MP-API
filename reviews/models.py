@@ -16,7 +16,6 @@ class Review(models.Model):
     reviewer = models.ForeignKey(
         User, related_name='reviews', on_delete=models.CASCADE
     )
-    feedback = models.TextField()
     feedback = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default='pending'
@@ -31,7 +30,7 @@ class Review(models.Model):
 
 
 class ReviewHistory(models.Model):
-    feedback = models.ForeignKey(
+    review = models.ForeignKey(
         Review, related_name="history", on_delete=models.CASCADE
     )
     editor = models.ForeignKey(
