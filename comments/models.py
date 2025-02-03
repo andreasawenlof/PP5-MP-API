@@ -1,18 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
-from tracks.models import Track
-from albums.models import Album
 
 
 class Comment(models.Model):
+    """A single comment linked to either a Track OR an Album (not both)."""
     content = models.TextField()
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="user_comments")
+        User, on_delete=models.CASCADE, related_name="user_comments"
+    )
     track = models.ForeignKey(
-        # ✅ NOW OPTIONAL
-        Track, related_name="track_comments", on_delete=models.CASCADE, null=True, blank=True)
+        "tracks.Track",  # ✅ Lazy import to avoid circular dependencies
+        related_name="track_comments",
+        on_delete=models.CASCADE, null=True, blank=True
+    )
     album = models.ForeignKey(
-        Album, related_name="album_comments", on_delete=models.CASCADE, null=True, blank=True)
+        "albums.Album",  # ✅ Lazy import to avoid circular dependencies
+        related_name="album_comments",
+        on_delete=models.CASCADE, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -20,8 +25,12 @@ class Comment(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        if self.track:
-            return f"Comment by {self.author.username} on Track: {self.track.title}"
-        elif self.album:
-            return f"Comment by {self.author.username} on Album: {self.album.title}"
-        return f"Comment by {self.author.username}"  # Fallback just in case
+        author_name = self.author.username if self.author else "Unknown User"
+        track_title = self.track.title if self.track_id else "No Track"
+        album_title = self.album.title if self.album_id else "No Album"
+
+        if self.track_id:
+            return f"Comment by {author_name} on Track: {track_title}"
+        elif self.album_id:
+            return f"Comment by {author_name} on Album: {album_title}"
+        return f"Comment by {author_name}"
