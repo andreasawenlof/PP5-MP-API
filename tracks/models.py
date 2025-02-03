@@ -62,10 +62,6 @@ class Track(models.Model):
         User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_tracks"
     )
 
-    comments = models.ManyToManyField(
-        "comments.Comment", blank=True, related_name="track_comments"
-    )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

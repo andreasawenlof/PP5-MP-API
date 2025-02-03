@@ -12,6 +12,9 @@ class CommentList(generics.ListCreateAPIView):
     # Only authenticated users can add/view comments
     permission_classes = [IsAuthenticated, IsEditorOrOwner]
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
