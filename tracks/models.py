@@ -92,6 +92,8 @@ class Track(models.Model):
     def save(self, *args, **kwargs):
         if not self.vocals_needed:
             self.vocals_status = None
+        elif self.vocals_status is None:
+            self.vocals_status = 'vocals_in_progress'
         super().save(*args, **kwargs)
 
     @classmethod

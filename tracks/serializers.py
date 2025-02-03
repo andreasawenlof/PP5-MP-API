@@ -5,7 +5,6 @@ from instruments.models import Instrument
 from django.contrib.auth.models import User
 
 
-# ✅ Independent Serializers for Mood, Genre, and ProjectType
 class MoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mood
@@ -25,6 +24,13 @@ class ProjectTypeSerializer(serializers.ModelSerializer):
 
 
 class TrackSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    assigned_composer = serializers.SlugRelatedField(
+        slug_field='username',
+        queryset=User.objects.filter(profile__is_composer=True),
+        required=False,
+        allow_null=True
+    )
     album = serializers.PrimaryKeyRelatedField(
         queryset=Album.objects.all(), allow_null=True
     )
@@ -46,26 +52,47 @@ class TrackSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(choices=Track.STATUS_CHOICES)
     vocals_status = serializers.ChoiceField(
         choices=Track.VOCALS_STATUS_CHOICES, allow_null=True, required=False)
-    assigned_composer = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
-        slug_field="username",
-        required=False
-    )
 
     class Meta:
         model = Track
         fields = [
-            "id", "title", "album", "instruments", "genre", "mood", "project_type",
+            "id", "owner", "title", "album", "instruments", "genre", "mood", "project_type",
             "status", "vocals_needed", "vocals_status", "assigned_composer",
             "notes", "created_at", "updated_at",
         ]
 
+    def validate(self, data):
+        vocals_needed = data.get('vocals_needed')
+        vocals_status = data.get('vocals_status')
+
+        # If this is an update, get the current values if not provided
+        if self.instance:
+            vocals_needed = vocals_needed if vocals_needed is not None else self.instance.vocals_needed
+            vocals_status = vocals_status if 'vocals_status' in data else self.instance.vocals_status
+
+        if vocals_needed is False:
+            if vocals_status is not None:
+                raise serializers.ValidationError(
+                    "Cannot set vocals_status when vocals are not needed.")
+            data['vocals_status'] = None
+        elif vocals_needed is True and vocals_status is None:
+            data['vocals_status'] = 'vocals_in_progress'
+
+        return data
+
     def create(self, validated_data):
+        instruments_data = validated_data.pop("instruments", [])
+
+        # Ensure assigned_composer is set
         if "assigned_composer" not in validated_data:
             validated_data["assigned_composer"] = self.context["request"].user
-        instruments_data = validated_data.pop("instruments", [])
-        track = super().create(validated_data)
+
+        # Create the track instance
+        track = Track.objects.create(**validated_data)
+
+        # Set the instruments
         track.instruments.set(instruments_data)
+
         return track
 
     def update(self, instance, validated_data):
@@ -100,6 +127,11 @@ class BulkTrackUpdateSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "At least one field to update must be provided.")
         return data
+
+    def create(self, validated_data):
+        # This serializer is not meant to create new objects
+        raise NotImplementedError(
+            "BulkTrackUpdateSerializer does not support creation.")
 
     def update(self, instance, validated_data):
         track_ids = validated_data.pop('track_ids')

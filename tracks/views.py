@@ -15,7 +15,7 @@ class TrackListCreate(generics.ListCreateAPIView):
     queryset = Track.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(assigned_user=self.request.user)
+        serializer.save(assigned_composer=self.request.user)
 
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
