@@ -4,14 +4,25 @@ from tracks.views import (
     TrackListCreate, TrackDetail, MoodListCreate, GenreListCreate,
     ProjectTypeListCreate, BulkTrackUpdateView
 )
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+
+
+def csrf_token_view(request):
+    return JsonResponse({"csrfToken": get_token(request)})
+
 
 urlpatterns = [
     # Admin & Authentication
     path('admin/', admin.site.urls),
     path('api/auth/', include('rest_framework.urls')),
-    path('api/auth/dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('api/auth/dj-rest-auth/registration/',
-         include('dj_rest_auth.registration.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('dj-rest-auth/token/refresh/',
+         TokenRefreshView.as_view(), name='token_refresh'),
+    path('dj-rest-auth/token/verify/',
+         TokenVerifyView.as_view(), name='token_verify'),
 
     # ✅ API Endpoints
     path('api/tracks/', TrackListCreate.as_view(), name='track-list'),
