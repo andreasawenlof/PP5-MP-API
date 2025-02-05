@@ -4,6 +4,7 @@ from tracks.views import (
     TrackListCreate, TrackDetail, MoodListCreate, GenreListCreate,
     ProjectTypeListCreate, BulkTrackUpdateView
 )
+
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -23,6 +24,7 @@ urlpatterns = [
          TokenRefreshView.as_view(), name='token_refresh'),
     path('dj-rest-auth/token/verify/',
          TokenVerifyView.as_view(), name='token_verify'),
+    path('csrf/', csrf_token_view, name='csrf'),
 
     # ✅ API Endpoints
     path('api/tracks/', TrackListCreate.as_view(), name='track-list'),

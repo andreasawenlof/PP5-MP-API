@@ -62,19 +62,23 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": ("Bearer",),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "COOKIE_ACCESS_TOKEN_KEY": "my-app-auth",
-    "COOKIE_REFRESH_TOKEN_KEY": "my-refresh-token",
-    "COOKIE_SAMESITE": "None",
-    "COOKIE_SECURE": False,
-    "COOKIE_HTTPONLY": False,
+    "AUTH_COOKIE": "my-app-auth",  # Use this instead of COOKIE_ACCESS_TOKEN_KEY
+    # Use this instead of COOKIE_REFRESH_TOKEN_KEY
+    "AUTH_COOKIE_REFRESH": "my-refresh-token",
+    "AUTH_COOKIE_DOMAIN": None,
+    "AUTH_COOKIE_SECURE": False,  # Set to True in production
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "Lax",
 }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',  # 🛠️ Add this
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # 🛠️ Add this
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
