@@ -1,0 +1,251 @@
+📜 Django Models Dump
+
+🔹 App: admin
+  - Model: LogEntry
+    Fields:
+      - id (AutoField)
+      - action_time (DateTimeField)
+      - user (ForeignKey)
+      - content_type (ForeignKey)
+      - object_id (TextField)
+      - object_repr (CharField)
+      - action_flag (PositiveSmallIntegerField)
+      - change_message (TextField)
+
+
+🔹 App: auth
+  - Model: Permission
+    Fields:
+      - id (AutoField)
+      - name (CharField)
+      - content_type (ForeignKey)
+      - codename (CharField)
+
+  - Model: Group
+    Fields:
+      - id (AutoField)
+      - name (CharField)
+
+  - Model: User
+    Fields:
+      - id (AutoField)
+      - password (CharField)
+      - last_login (DateTimeField)
+      - is_superuser (BooleanField)
+      - username (CharField)
+      - first_name (CharField)
+      - last_name (CharField)
+      - email (CharField)
+      - is_staff (BooleanField)
+      - is_active (BooleanField)
+      - date_joined (DateTimeField)
+
+
+🔹 App: contenttypes
+  - Model: ContentType
+    Fields:
+      - id (AutoField)
+      - app_label (CharField)
+      - model (CharField)
+
+
+🔹 App: sessions
+  - Model: Session
+    Fields:
+      - session_key (CharField)
+      - session_data (TextField)
+      - expire_date (DateTimeField)
+
+
+🔹 App: messages
+
+🔹 App: staticfiles
+
+🔹 App: rest_framework
+
+🔹 App: authtoken
+  - Model: Token
+    Fields:
+      - key (CharField)
+      - user (OneToOneField)
+      - created (DateTimeField)
+
+  - Model: TokenProxy
+    Fields:
+      - key (CharField)
+      - user (OneToOneField)
+      - created (DateTimeField)
+
+
+🔹 App: corsheaders
+
+🔹 App: dj_rest_auth
+
+🔹 App: allauth
+
+🔹 App: account
+  - Model: EmailAddress
+    Fields:
+      - id (AutoField)
+      - user (ForeignKey)
+      - email (CharField)
+      - verified (BooleanField)
+      - primary (BooleanField)
+
+  - Model: EmailConfirmation
+    Fields:
+      - id (AutoField)
+      - email_address (ForeignKey)
+      - created (DateTimeField)
+      - sent (DateTimeField)
+      - key (CharField)
+
+
+🔹 App: socialaccount
+  - Model: SocialApp
+    Fields:
+      - id (AutoField)
+      - provider (CharField)
+      - provider_id (CharField)
+      - name (CharField)
+      - client_id (CharField)
+      - secret (CharField)
+      - key (CharField)
+      - settings (JSONField)
+
+  - Model: SocialAccount
+    Fields:
+      - id (AutoField)
+      - user (ForeignKey)
+      - provider (CharField)
+      - uid (CharField)
+      - last_login (DateTimeField)
+      - date_joined (DateTimeField)
+      - extra_data (JSONField)
+
+  - Model: SocialToken
+    Fields:
+      - id (AutoField)
+      - app (ForeignKey)
+      - account (ForeignKey)
+      - token (TextField)
+      - token_secret (TextField)
+      - expires_at (DateTimeField)
+
+
+🔹 App: registration
+
+🔹 App: cloudinary
+
+🔹 App: cloudinary_storage
+
+🔹 App: django_filters
+
+🔹 App: tracks
+  - Model: Genre
+    Fields:
+      - id (BigAutoField)
+      - name (CharField)
+
+  - Model: Mood
+    Fields:
+      - id (BigAutoField)
+      - name (CharField)
+
+  - Model: ProjectType
+    Fields:
+      - id (BigAutoField)
+      - name (CharField)
+
+  - Model: Track
+    Fields:
+      - id (BigAutoField)
+      - title (CharField)
+      - notes (TextField)
+      - status (CharField)
+      - vocals_needed (BooleanField)
+      - vocals_status (CharField)
+      - project_type (ForeignKey)
+      - genre (ForeignKey)
+      - mood (ForeignKey)
+      - album (ForeignKey)
+      - assigned_composer (ForeignKey)
+      - created_at (DateTimeField)
+      - updated_at (DateTimeField)
+
+
+🔹 App: albums
+  - Model: Album
+    Fields:
+      - id (BigAutoField)
+      - title (CharField)
+      - owner (ForeignKey)
+      - status (CharField)
+      - cover_art (CharField)
+      - notes (TextField)
+      - project_type (ForeignKey)
+      - genre (ForeignKey)
+      - mood (ForeignKey)
+      - created_at (DateTimeField)
+      - updated_at (DateTimeField)
+
+
+🔹 App: instruments
+  - Model: InstrumentCategory
+    Fields:
+      - id (BigAutoField)
+      - name (CharField)
+
+  - Model: Instrument
+    Fields:
+      - id (BigAutoField)
+      - name (CharField)
+      - image (CharField)
+
+
+🔹 App: profiles
+  - Model: Profile
+    Fields:
+      - id (BigAutoField)
+      - owner (OneToOneField)
+      - display_name (CharField)
+      - bio (TextField)
+      - is_composer (BooleanField)
+      - is_reviewer (BooleanField)
+      - avatar (CharField)
+      - created_at (DateTimeField)
+      - updated_at (DateTimeField)
+
+
+🔹 App: comments
+  - Model: Comment
+    Fields:
+      - id (BigAutoField)
+      - owner (ForeignKey)
+      - content (TextField)
+      - track (ForeignKey)
+      - album (ForeignKey)
+      - created_at (DateTimeField)
+      - updated_at (DateTimeField)
+
+
+🔹 App: reviews
+  - Model: Review
+    Fields:
+      - id (BigAutoField)
+      - track (ForeignKey)
+      - reviewer (ForeignKey)
+      - feedback (TextField)
+      - status (CharField)
+      - reviewed_at (DateTimeField)
+
+  - Model: ReviewHistory
+    Fields:
+      - id (BigAutoField)
+      - review (ForeignKey)
+      - editor (ForeignKey)
+      - edited_at (DateTimeField)
+      - updated_feedback (TextField)
+      - revision_number (IntegerField)
+
+
