@@ -22,15 +22,14 @@ class CommentSerializer(serializers.ModelSerializer):
         source='owner.profile.is_reviewer', read_only=True
     )
 
-    track = serializers.SlugRelatedField(
+    track = serializers.PrimaryKeyRelatedField(
         queryset=Track.objects.all(),
-        slug_field='title',
         required=False,
         allow_null=True
     )
-    album = serializers.SlugRelatedField(
+
+    album = serializers.PrimaryKeyRelatedField(
         queryset=Album.objects.all(),
-        slug_field='title',
         required=False,
         allow_null=True
     )

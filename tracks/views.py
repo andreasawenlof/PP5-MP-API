@@ -4,7 +4,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from .models import Track, Mood, Genre, ProjectType
 from .serializers import TrackSerializer, MoodSerializer, GenreSerializer, ProjectTypeSerializer, BulkTrackUpdateSerializer
-from mp_api.permissions import IsOwnerOrReadOnly
+from mp_api.permissions import IsComposerOrOwner, IsReviewer, IsOwnerOrReadOnly
 
 
 class TrackListCreate(generics.ListCreateAPIView):
@@ -26,9 +26,8 @@ class TrackListCreate(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         if not self.request.user.profile.is_composer:
-            raise NotFound()  # Reviewers won’t even see the create option.
-        serializer.save(owner=self.request.user,
-                        assigned_composer=self.request.user)
+            raise NotFound()  # ✅ Reviewers won’t even see the create option.
+        serializer.save()
 
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):

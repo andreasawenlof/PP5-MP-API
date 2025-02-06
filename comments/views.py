@@ -16,11 +16,23 @@ class CommentList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """✅ Reviewers & Unauthorized Users see NOTHING (Empty List)."""
+        """✅ Return only comments for a specific track or album."""
         user = self.request.user
-        if user.profile.is_composer:
-            return Comment.objects.select_related("owner", "track", "album")
-        return Comment.objects.none()  # ✅ Just return an empty list for them
+        track_id = self.request.query_params.get("track")
+        album_id = self.request.query_params.get("album")
+
+        if not track_id and not album_id:
+            return Comment.objects.none()  # ✅ No track/album = No comments
+
+        queryset = Comment.objects.select_related("owner", "track", "album")
+
+        # ✅ Filter by track or album
+        if track_id:
+            queryset = queryset.filter(track_id=track_id)
+        elif album_id:
+            queryset = queryset.filter(album_id=album_id)
+
+        return queryset
 
     def perform_create(self, serializer):
         """✅ Only composers can create comments. Reviewers see NOTHING."""
