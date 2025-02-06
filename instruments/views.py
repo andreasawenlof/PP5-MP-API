@@ -3,7 +3,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from .serializers import InstrumentSerializer, InstrumentCategorySerializer
 from rest_framework import generics
 from .models import InstrumentCategory, Instrument
-from mp_api.permissions import IsComposerOrOwner
+from mp_api.permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
 
@@ -14,7 +14,7 @@ class InstrumentCategoryList(generics.ListCreateAPIView):
     ✅ Reviewers/unauthorized users see NOTHING.
     """
     serializer_class = InstrumentCategorySerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """✅ Only composers can see instrument categories, others get 404."""
@@ -37,7 +37,7 @@ class InstrumentList(generics.ListCreateAPIView):
     ✅ Filtering & search enabled for composers.
     """
     serializer_class = InstrumentSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["categories"]
     search_fields = ["name"]
@@ -63,7 +63,7 @@ class InstrumentCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     ✅ Reviewers/unauthorized users get a 404.
     """
     serializer_class = InstrumentCategorySerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get_queryset(self):
         """✅ Only composers can see instrument categories, others get 404."""
@@ -79,7 +79,7 @@ class InstrumentDetail(generics.RetrieveUpdateDestroyAPIView):
     ✅ Reviewers/unauthorized users get a 404.
     """
     serializer_class = InstrumentSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get_queryset(self):
         """✅ Only composers can see instruments, others get a 404."""

@@ -38,7 +38,7 @@ class CommentDetail(generics.RetrieveAPIView):
     """
     queryset = Comment.objects.select_related("owner", "track", "album")
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get_object(self):
         """

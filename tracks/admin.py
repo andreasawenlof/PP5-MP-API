@@ -4,7 +4,7 @@ from .models import Track, Genre, Mood, ProjectType
 
 @admin.register(Track)
 class TrackAdmin(admin.ModelAdmin):
-    list_display = ("title", "status", "genre", "mood",
+    list_display = ("owner", "title", "status", "genre", "mood",
                     "project_type", "updated_at")
     list_filter = ("status", "genre", "mood", "project_type")
     search_fields = ("title", "notes")

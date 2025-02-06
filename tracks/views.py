@@ -4,7 +4,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from .models import Track, Mood, Genre, ProjectType
 from .serializers import TrackSerializer, MoodSerializer, GenreSerializer, ProjectTypeSerializer, BulkTrackUpdateSerializer
-from mp_api.permissions import IsComposerOrOwner, IsReviewer
+from mp_api.permissions import IsOwnerOrReadOnly
 
 
 class TrackListCreate(generics.ListCreateAPIView):
@@ -26,8 +26,9 @@ class TrackListCreate(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         if not self.request.user.profile.is_composer:
-            raise NotFound()  # ✅ Reviewers won’t even see the create option.
-        serializer.save()
+            raise NotFound()  # Reviewers won’t even see the create option.
+        serializer.save(owner=self.request.user,
+                        assigned_composer=self.request.user)
 
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -37,7 +38,7 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
     - 🚫 If a reviewer tries to access a track they shouldn't, they get a 404 (Not Found).
     """
     serializer_class = TrackSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get_object(self):
         """
@@ -79,26 +80,26 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
 class MoodListCreate(generics.ListCreateAPIView):
     queryset = Mood.objects.all()
     serializer_class = MoodSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 # ✅ GENRES
 class GenreListCreate(generics.ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 # ✅ PROJECT TYPES
 class ProjectTypeListCreate(generics.ListCreateAPIView):
     queryset = ProjectType.objects.all()
     serializer_class = ProjectTypeSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
 
 
 # ✅ BULK UPDATES
 class BulkTrackUpdateView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
     serializer_class = BulkTrackUpdateSerializer
 
     def update(self, request, *args, **kwargs):

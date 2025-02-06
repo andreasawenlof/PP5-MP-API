@@ -1,19 +1,19 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from mp_api.permissions import IsOwnerOrReadOnly, IsComposerOrOwner
+from mp_api.permissions import IsOwnerOrReadOnly
 from .serializers import ProfileSerializer
 from .models import Profile
 
 
 class ProfileList(generics.ListAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     queryset = Profile.objects.all()
 
 
 class ProfileDetail(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get_queryset(self):
         user = self.request.user

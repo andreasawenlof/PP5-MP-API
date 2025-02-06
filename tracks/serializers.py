@@ -57,14 +57,17 @@ class TrackSerializer(serializers.ModelSerializer):
     assigned_composer_username = serializers.CharField(
         source="assigned_composer.username", read_only=True)
 
+    status_display = serializers.CharField(read_only=True)
+
     class Meta:
         model = Track
         fields = [
             "id", "owner", "title", "album", "album_name", "instruments", "instrument_names",
             "genre", "genre_name", "mood", "mood_name", "project_type", "project_type_name",
-            "status", "vocals_needed", "vocals_status", "assigned_composer", "assigned_composer_username",
+            "status", "status_display", "vocals_needed", "vocals_status", "assigned_composer", "assigned_composer_username",
             "notes", "created_at", "updated_at",
         ]
+        read_only_fields = ['owner']
 
     def update(self, instance, validated_data):
         # Handle instruments

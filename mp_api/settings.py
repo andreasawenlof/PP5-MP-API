@@ -59,20 +59,23 @@ REST_AUTH = {
     "JWT_AUTH_SECURE": False,  # Change to True in production
     "JWT_AUTH_HTTPONLY": False,
     "JWT_AUTH_SAMESITE": "None",
+    'USER_DETAILS_SERIALIZER': 'mp_api.serializers.UserSerializer',
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=50),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "AUTH_COOKIE": "my-app-auth",  # Use this instead of COOKIE_ACCESS_TOKEN_KEY
     # Use this instead of COOKIE_REFRESH_TOKEN_KEY
-    "AUTH_COOKIE_REFRESH": "my-refresh-token",
     "AUTH_COOKIE_DOMAIN": None,
     "AUTH_COOKIE_SECURE": False,  # Set to True in production
-    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_HTTP_ONLY": False,
     "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "Lax",
+    "AUTH_COOKIE_SAMESITE": "None",
+    "ROTATE_REFRESH_TOKENS": True,
+
+
 }
 
 REST_FRAMEWORK = {

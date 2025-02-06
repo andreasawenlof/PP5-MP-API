@@ -5,6 +5,7 @@ from profiles.models import Profile
 from instruments.models import Instrument
 from django.utils.text import slugify
 from django.db.models.signals import post_migrate
+from django.core.exceptions import ValidationError
 
 
 class Genre(models.Model):
@@ -44,6 +45,9 @@ class Track(models.Model):
     ]
 
     title = models.CharField(max_length=255, blank=False, null=False)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="owned_tracks"
+    )
     notes = models.TextField(blank=True, default="")
     status = models.CharField(
         max_length=25, choices=STATUS_CHOICES, default='not_started', blank=False, null=False
@@ -86,6 +90,10 @@ class Track(models.Model):
     class Meta:
         ordering = ["-updated_at"]
 
+    @property
+    def status_display(self):
+        return self.get_status_display()
+
     def __str__(self):
         return f"{self.title} - {self.status} ({self.project_type})"
 
@@ -95,6 +103,14 @@ class Track(models.Model):
         elif self.vocals_status is None:
             self.vocals_status = 'vocals_in_progress'
         super().save(*args, **kwargs)
+
+    def set_review_status(self, new_status):
+        if self.status == 'ready_for_review':
+            self.review_status = new_status
+            self.save()
+        else:
+            raise ValidationError(
+                "Review status can only be changed when the track is ready for review.")
 
     @classmethod
     def bulk_update_tracks(cls, track_ids, **kwargs):

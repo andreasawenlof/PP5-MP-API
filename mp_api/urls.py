@@ -5,6 +5,7 @@ from tracks.views import (
     ProjectTypeListCreate, BulkTrackUpdateView
 )
 
+
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from django.http import JsonResponse
 from django.middleware.csrf import get_token

@@ -3,13 +3,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from .models import Album
 from .serializers import AlbumSerializer
-from mp_api.permissions import IsComposerOrOwner
+from mp_api.permissions import IsOwnerOrReadOnly
 
 
 class AlbumListCreate(generics.ListCreateAPIView):
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsAuthenticated]
 
     filter_backends = [DjangoFilterBackend,
                        filters.OrderingFilter, filters.SearchFilter]
@@ -27,7 +27,7 @@ class AlbumListCreate(generics.ListCreateAPIView):
 class AlbumDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
