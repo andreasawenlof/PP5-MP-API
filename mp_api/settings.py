@@ -63,7 +63,7 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=50),
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "AUTH_COOKIE": "my-app-auth",  # Use this instead of COOKIE_ACCESS_TOKEN_KEY
@@ -73,7 +73,7 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_HTTP_ONLY": False,
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "None",
-    "ROTATE_REFRESH_TOKENS": True,
+    "ROTATE_REFRESH_TOKENS": False,
 
 
 }
