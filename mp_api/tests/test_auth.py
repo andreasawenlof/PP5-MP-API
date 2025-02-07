@@ -1,70 +1,59 @@
+# tests.py
 from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 import time
-from django.conf import settings
 
 
 class AuthenticationTest(APITestCase):
     def setUp(self):
-        """Set up test user and login URL"""
         self.user = User.objects.create_user(
             username="testuser",
             password="testpass123"
         )
-        self.login_url = reverse("rest_login")
-        self.logout_url = reverse("rest_logout")
-        self.protected_url = reverse("track-list")  # Adjust for a real route
+        self.login_url = '/dj-rest-auth/login/'
+        self.logout_url = '/dj-rest-auth/logout/'
+        self.refresh_url = '/dj-rest-auth/token/refresh/'
+        self.protected_url = reverse("track-list")  # Example endpoint
 
     def test_login_success(self):
-        """Test user can log in and get a token."""
         response = self.client.post(self.login_url, {
             "username": "testuser",
             "password": "testpass123"
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("access", response.data)  # JWT token must be in response
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
 
     def test_login_invalid_credentials(self):
-        """Test login fails with incorrect password."""
         response = self.client.post(self.login_url, {
             "username": "testuser",
-            "password": "wrongpassword"
+            "password": "wrongpass"
         })
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_access_protected_route_without_token(self):
-        """Test that an unauthenticated user cannot access a protected route."""
         response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_expiry(self):
-        """Test if the access token expires correctly."""
         response = self.client.post(self.login_url, {
             "username": "testuser",
             "password": "testpass123"
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         access_token = response.data["access"]
-
-        # Set auth headers
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
 
-        # Get token expiration time dynamically
-        expiry_seconds = settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds(
-        )
+        # Wait just over 5 seconds (the test-lifetime).
+        time.sleep(6)
 
-        # Wait slightly beyond expiry (ensure full expiration)
-        time.sleep(expiry_seconds + 2)
-
-        # Try accessing the protected route after expiry
+        # Should be expired -> 401
         response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_access_protected_route_with_valid_token(self):
-        """Test that an authenticated user can access a protected route."""
-        # Login and get token
         response = self.client.post(self.login_url, {
             "username": "testuser",
             "password": "testpass123"
@@ -72,37 +61,68 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         access_token = response.data["access"]
 
-        # Set auth headers
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
-
-        # Try accessing the protected route
         response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_logout(self):
-        """Test that a user can log out successfully."""
-        # Login first
-        login_response = self.client.post(self.login_url, {
+        response = self.client.post(self.login_url, {
             "username": "testuser",
             "password": "testpass123"
         })
-        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        access_token = response.data["access"]
+        refresh_token = response.data["refresh"]
 
-        # Get the access token
-        access_token = login_response.data['access']
-
-        # Set the token in the Authorization header
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
-
-        # Logout
-        logout_response = self.client.post(self.logout_url)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+        logout_response = self.client.post(
+            self.logout_url,
+            {"refresh_token": refresh_token},
+            format="json"
+        )
         self.assertEqual(logout_response.status_code, status.HTTP_200_OK)
 
-        # Try accessing protected route after logout
+        # *** Wait for the short-lived access token to expire ***
+        time.sleep(6)  # If your ACCESS_TOKEN_LIFETIME=5
+
+        # Now the token is expired, so we get 401
         response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_logout_without_token(self):
-        """Test logout without being authenticated."""
         response = self.client.post(self.logout_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_refresh_token(self):
+        response = self.client.post(self.login_url, {
+            "username": "testuser",
+            "password": "testpass123"
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        refresh_token = response.data["refresh"]
+
+        response = self.client.post(
+            self.refresh_url, {"refresh": refresh_token}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", response.data)
+
+    def test_token_blacklist_after_logout(self):
+        response = self.client.post(self.login_url, {
+            "username": "testuser",
+            "password": "testpass123"
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        access_token = response.data["access"]
+        refresh_token = response.data["refresh"]
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+        # Logout (blacklist token)
+        self.client.post(self.logout_url, {
+                         "refresh_token": refresh_token}, format="json")
+
+        # Attempt to refresh => should fail (401)
+        response = self.client.post(
+            self.refresh_url, {"refresh": refresh_token}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

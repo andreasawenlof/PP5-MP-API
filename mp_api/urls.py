@@ -4,8 +4,7 @@ from tracks.views import (
     TrackListCreate, TrackDetail, MoodListCreate, GenreListCreate,
     ProjectTypeListCreate, BulkTrackUpdateView
 )
-
-
+from mp_api.auth_views import CustomLogoutView  # Import your custom logout view
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -18,7 +17,11 @@ def csrf_token_view(request):
 urlpatterns = [
     # Admin & Authentication
     path('admin/', admin.site.urls),
+    path('dj-rest-auth/logout/', CustomLogoutView.as_view(), name='rest_logout'),
     path('api/auth/', include('rest_framework.urls')),
+
+    # Place the custom logout view BEFORE including dj-rest-auth URLs
+
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
     path('dj-rest-auth/token/refresh/',

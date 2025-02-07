@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 import dj_database_url
 from datetime import timedelta
@@ -52,42 +53,57 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
+
+# -----------------------------------------------------
+# REST_AUTH & SIMPLE_JWT SETTINGS
+# -----------------------------------------------------
 REST_AUTH = {
-    "USE_JWT": True,
-    "JWT_AUTH_COOKIE": "my-app-auth",
-    "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
-    "JWT_AUTH_SECURE": False,  # Change to True in production
-    "JWT_AUTH_HTTPONLY": False,
-    "JWT_AUTH_SAMESITE": "None",
-    'USER_DETAILS_SERIALIZER': 'mp_api.serializers.UserSerializer',
+    'USE_JWT': True,
+    'TOKEN_MODEL': None,
+    'JWT_AUTH_COOKIE': 'my-app-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+    'JWT_AUTH_SAMESITE': 'None',
+    'JWT_AUTH_SECURE': False,        # We can keep this False in dev
+    'JWT_AUTH_HTTPONLY': True,       # We'll override in test mode below
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': False,
+    'SESSION_LOGIN': False,
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "AUTH_COOKIE": "my-app-auth",  # Use this instead of COOKIE_ACCESS_TOKEN_KEY
-    # Use this instead of COOKIE_REFRESH_TOKEN_KEY
-    "AUTH_COOKIE_DOMAIN": None,
-    "AUTH_COOKIE_SECURE": False,  # Set to True in production
-    "AUTH_COOKIE_HTTP_ONLY": False,
-    "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "None",
-    "ROTATE_REFRESH_TOKENS": False,
-
-
+    # So the refresh token we get at login doesn't change
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-        'rest_framework.authentication.SessionAuthentication',  # 🛠️ Add this
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',  # 🛠️ Add this
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
+
+# -----------------------------------------------------
+# OVERRIDES FOR TEST MODE
+# -----------------------------------------------------
+if 'test' in sys.argv:
+    SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] = timedelta(seconds=5)
+    SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'] = timedelta(seconds=10)
+
+    # So we can pass the token in the JSON body
+    REST_AUTH['JWT_AUTH_HTTPONLY'] = False
+
+    # Use JWTAuthentication instead of dj_rest_auth.jwt_auth.JWTCookieAuthentication
+    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
 
 if 'DEVELOPER' not in os.environ:
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
@@ -106,7 +122,7 @@ INSTALLED_APPS = [
 
     # Third-Party Apps
     'rest_framework',
-    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'dj_rest_auth',
     'allauth',
