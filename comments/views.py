@@ -3,7 +3,8 @@ from rest_framework import generics
 from .models import Comment
 from .serializers import CommentSerializer
 from rest_framework.permissions import IsAuthenticated
-from mp_api.permissions import IsOwnerOrReadOnly, IsComposerOrOwner
+from mp_api.permissions import IsOwnerOrReadOnly
+from rest_framework import serializers
 
 
 class CommentList(generics.ListCreateAPIView):
@@ -42,7 +43,7 @@ class CommentList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 
-class CommentDetail(generics.RetrieveAPIView):
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve comment details.
     - ✅ Only composers & owners can view comments.
@@ -70,3 +71,17 @@ class CommentDetail(generics.RetrieveAPIView):
             return obj
 
         raise NotFound()  # ✅ Reviewers & Unauthorized Users see NOTHING
+
+    def perform_update(self, serializer):
+        """
+        Make sure a track or album is associated when updating a comment.
+        """
+        track = self.request.data.get('track')
+        album = self.request.data.get('album')
+
+        if not track and not album:
+            raise serializers.ValidationError(
+                "A comment must be associated with either a track or an album.")
+
+        # ✅ Finally save the updated data!
+        serializer.save()

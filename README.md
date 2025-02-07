@@ -8,17 +8,8 @@
     -   [🔗 API Endpoints](#-api-endpoints)
         -   [🔑 Authentication](#-authentication)
         -   [🎵 Tracks](#-tracks)
-        -   [🎶 Albums](#-albums)
-        -   [🎸 Instruments](#-instruments)
-        -   [💬 Comments](#-comments)
-        -   [📋 Review System (Supervisor Feedback)](#-review-system-supervisor-feedback)
-    -   [📦 Database Models](#-database-models)
-        -   [🏆 Core Models](#-core-models)
-        -   [🔗 Model Relationships](#-model-relationships)
-    -   [🛠 CRUD Functionality](#-crud-functionality)
-    -   [⚙️ Setup \& Deployment](#️-setup--deployment)
-        -   [💻 Local Setup](#-local-setup)
-        -   [Deployment to Heroku](#deployment-to-heroku)
+    -   [📚 Testing](#-testing)
+    -   [📚 Security Considerations](#-security-considerations)
     -   [📚 Agile Workflow](#-agile-workflow)
     -   [Technologies Used](#technologies-used)
 
@@ -50,92 +41,51 @@ The **Music Productivity API** is built using **Django Rest Framework (DRF)** to
 | `PUT`       | `/tracks/<id>/` | Update a track.            | **Composers Only**                |
 | `DELETE`    | `/tracks/<id>/` | Delete a track.            | **Composers Only**                |
 
-### 🎶 Albums
-
-| HTTP Method | Endpoint        | Description                | Access         |
-| ----------- | --------------- | -------------------------- | -------------- |
-| `GET`       | `/albums/`      | Retrieve all albums.       | Composers Only |
-| `POST`      | `/albums/`      | Create a new album.        | Composers Only |
-| `GET`       | `/albums/<id>/` | Retrieve a specific album. | Composers Only |
-| `PUT`       | `/albums/<id>/` | Update an album.           | Composers Only |
-| `DELETE`    | `/albums/<id>/` | Delete an album.           | Composers Only |
-
-### 🎸 Instruments
-
-| HTTP Method | Endpoint             | Description                     | Access         |
-| ----------- | -------------------- | ------------------------------- | -------------- |
-| `GET`       | `/instruments/`      | Retrieve all instruments.       | Composers Only |
-| `POST`      | `/instruments/`      | Add a new instrument.           | Composers Only |
-| `GET`       | `/instruments/<id>/` | Retrieve a specific instrument. | Composers Only |
-| `DELETE`    | `/instruments/<id>/` | Delete an instrument.           | Composers Only |
-
-### 💬 Comments
-
-| HTTP Method | Endpoint          | Description                     | Access         |
-| ----------- | ----------------- | ------------------------------- | -------------- |
-| `GET`       | `/comments/`      | Retrieve all comments.          | Composers Only |
-| `POST`      | `/comments/`      | Add a comment to a track/album. | Composers Only |
-| `DELETE`    | `/comments/<id>/` | Delete a comment.               | Composers Only |
-
-### 📋 Review System (Supervisor Feedback)
-
-| HTTP Method | Endpoint         | Description                      | Access                |
-| ----------- | ---------------- | -------------------------------- | --------------------- |
-| `GET`       | `/reviews/`      | Retrieve all supervisor reviews. | Composers Only        |
-| `POST`      | `/reviews/`      | Add a review to a track/album.   | **Reviewers Only**    |
-| `GET`       | `/reviews/<id>/` | Retrieve a review.               | Composers & Reviewers |
+...
 
 ---
 
-## 📦 Database Models
+## 📚 Testing
 
-### 🏆 Core Models
+The API has been tested using **Postman** to verify that all endpoints function correctly. Below are the key areas of testing:
 
--   **User**: Handles authentication & user roles.
--   **Track**: Represents an individual composition.
--   **Album**: A collection of tracks.
--   **Instrument**: Many-to-Many model for track instrumentation.
--   **Comment**: Internal communication system.
--   **Review**: Supervisor feedback system for structured feedback.
-
-### 🔗 Model Relationships
-
--   **One-to-Many**: A track belongs to an album, but an album can have many tracks.
--   **Many-to-Many**: Tracks can have multiple instruments, and instruments can be used in multiple tracks.
-
----
-
-## 🛠 CRUD Functionality
-
-👉 **Create**: Tracks, albums, instruments, comments, and reviews.  
-👉 **Read**: Retrieve details for tracks, albums, comments, and reviews.  
-👉 **Update**: Modify track details, albums, and reviews (reviewers only).  
-👉 **Delete**: Remove tracks, albums, instruments, and comments.
+1. **Authentication**
+    - Login, Logout, Registration functionality.
+    - JWT Token handling and security.
+2. **Tracks & Albums**
+    - Creating, updating, deleting, and retrieving.
+    - Ensuring only authorized users can modify content.
+3. **Comments & Reviews**
+    - Posting, retrieving, and deleting comments.
+    - Ensuring reviewers can provide structured feedback.
+4. **Error Handling**
+    - Invalid requests return appropriate error messages.
+    - Proper HTTP status codes (400, 401, 403, 404, 500) are used.
+5. **Security**
+    - Permissions enforce proper access control.
+    - Unauthorized users cannot modify others' content.
 
 ---
 
-## ⚙️ Setup & Deployment
+## 📚 Security Considerations
 
-### 💻 Local Setup
+-   **Environment Variables:**
 
-```bash
-git clone <your-repo-url>
-cd music-productivity-api
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
+    -   All sensitive credentials (DB URL, secret keys, JWT secrets) are stored in **environment variables**.
+    -   `.env` files are used locally but are **never committed** to GitHub.
 
-### Deployment to Heroku
+-   **Permissions & Authentication:**
 
-```bash
-heroku login
-heroku create <your-app-name>
-git push heroku main
-heroku run python manage.py migrate
-```
+    -   Role-based access control prevents unauthorized actions.
+    -   JWT authentication ensures secure API access.
+
+-   **CORS Handling:**
+
+    -   Django CORS Headers ensures controlled cross-origin access.
+    -   Only whitelisted domains can interact with the API.
+
+-   **Debug Mode:**
+    -   `DEBUG = False` in production to prevent leaks of sensitive information.
 
 ---
 
@@ -152,3 +102,5 @@ Project development follows **Agile methodology** with iterative improvements.
 -   **Authentication**: dj-rest-auth (JWT-based authentication)
 -   **Deployment**: Heroku, Cloudinary
 -   **Other Libraries**: Django CORS Headers, Gunicorn
+
+---

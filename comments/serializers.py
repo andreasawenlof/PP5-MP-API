@@ -11,10 +11,13 @@ class CommentSerializer(serializers.ModelSerializer):
     Serializer for the Comment model.
     Handles serialization and deserialization of Comment objects.
     """
-    owner = serializers.ReadOnlyField(source='owner.profile.display_name')
+    owner = serializers.ReadOnlyField(source='owner.username')
+    display_name = serializers.ReadOnlyField(
+        source='owner.profile.display_name')
     profile_image = serializers.CharField(
         source='owner.profile.avatar.url', read_only=True
     )
+
     is_composer = serializers.BooleanField(
         source='owner.profile.is_composer', read_only=True
     )
@@ -45,7 +48,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = [
-            'id', 'owner', 'profile_image', 'track', 'album', 'content', 'is_composer', 'is_reviewer',
+            'id', 'owner', 'display_name', 'profile_image', 'track', 'album', 'content', 'is_composer', 'is_reviewer',
             'created_at', 'updated_at'
         ]
 

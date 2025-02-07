@@ -26,8 +26,18 @@ class TrackListCreate(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         if not self.request.user.profile.is_composer:
-            raise NotFound()  # ✅ Reviewers won’t even see the create option.
-        serializer.save()
+            raise NotFound()  # ✅ Only composers can create tracks
+
+        # Default to the logged-in user as the assigned_composer
+        assigned_composer = self.request.user
+
+        # Allow manual override if a composer is explicitly chosen
+        if serializer.validated_data.get('assigned_composer'):
+            assigned_composer = serializer.validated_data['assigned_composer']
+
+        # Save the track with the assigned composer and owner
+        serializer.save(owner=self.request.user,
+                        assigned_composer=assigned_composer)
 
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
