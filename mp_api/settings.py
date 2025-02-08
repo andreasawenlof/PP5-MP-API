@@ -42,10 +42,21 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'localhost:3000',  # React frontend
+    'mp-frontend-4a5fc1537e05.herokuapp.com',  # React frontend deploy
+    'mp-api-2f2442c94bb0.herokuapp.com'  # backend deploy
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:8000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000",
+                        "http://localhost:8000",
+                        "https://mp-frontend-4a5fc1537e05.herokuapp.com",
+                        "https://mp-api-2f2442c94bb0.herokuapp.com"
+                        ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "https://mp-frontend-4a5fc1537e05.herokuapp.com",
+    "https://mp-api-2f2442c94bb0.herokuapp.com"
+]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -85,7 +96,6 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -126,7 +136,6 @@ INSTALLED_APPS = [
 
     # Third-Party Apps
     'rest_framework',
-    'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'dj_rest_auth',
