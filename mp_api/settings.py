@@ -90,7 +90,7 @@ REST_AUTH = {
 SIMPLE_JWT = {
     # So the refresh token we get at login doesn't change
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
@@ -111,17 +111,17 @@ REST_FRAMEWORK = {
 # -----------------------------------------------------
 # OVERRIDES FOR TEST MODE
 # -----------------------------------------------------
-if 'test' in sys.argv:
-    SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] = timedelta(seconds=5)
-    SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'] = timedelta(seconds=10)
+# if 'test' in sys.argv:
+#     SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] = timedelta(seconds=5)
+#     SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'] = timedelta(seconds=10)
 
-    # So we can pass the token in the JSON body
-    REST_AUTH['JWT_AUTH_HTTPONLY'] = False
+#     # So we can pass the token in the JSON body
+#     REST_AUTH['JWT_AUTH_HTTPONLY'] = False
 
-    # Use JWTAuthentication instead of dj_rest_auth.jwt_auth.JWTCookieAuthentication
-    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+#     # Use JWTAuthentication instead of dj_rest_auth.jwt_auth.JWTCookieAuthentication
+#     REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = [
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ]
 
 if 'DEVELOPER' not in os.environ:
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
