@@ -176,3 +176,12 @@ exportmodels.py
 modelsdump.txt
 cookies.txt
 staticfiles/
+models_dump.json
+models_dump.txt
+erd.dot
+erd.png
+erd.json
+erd.svg
+models.txt
+README_copy
+exportmodels.py

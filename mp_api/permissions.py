@@ -14,6 +14,18 @@ class IsComposerOrOwner(permissions.BasePermission):
         return request.user.profile.is_composer or obj.owner == request.user
 
 
+class IsComposerOrReviewer(permissions.BasePermission):
+    """
+    Custom permission: Grants access to composers OR reviewers.
+    """
+
+    def has_permission(self, request, view):
+        user = request.user
+        return (
+            (user.profile.is_composer or user.profile.is_reviewer)
+        )
+
+
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Only allow the owner of a profile to edit it.

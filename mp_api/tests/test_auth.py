@@ -53,7 +53,7 @@ class AuthenticationTest(APITestCase):
         response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_access_protected_route_with_valid_token(self):
+    def test_access_regular_user_protected_route_with_valid_token(self):
         response = self.client.post(self.login_url, {
             "username": "testuser",
             "password": "testpass123"
@@ -63,7 +63,7 @@ class AuthenticationTest(APITestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         response = self.client.get(self.protected_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_logout(self):
         response = self.client.post(self.login_url, {

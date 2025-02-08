@@ -1,106 +1,152 @@
-# 🎵 Music Productivity API
+# Track Management API - Backend README
 
-## 📌 Table of Contents
+## 🎵 Overview
 
--   [🎵 Music Productivity API](#-music-productivity-api)
-    -   [📌 Table of Contents](#-table-of-contents)
-    -   [🚀 Introduction](#-introduction)
-    -   [🔗 API Endpoints](#-api-endpoints)
-        -   [🔑 Authentication](#-authentication)
-        -   [🎵 Tracks](#-tracks)
-    -   [📚 Testing](#-testing)
-    -   [📚 Security Considerations](#-security-considerations)
-    -   [📚 Agile Workflow](#-agile-workflow)
-    -   [Technologies Used](#technologies-used)
+This is a **Track Management API** designed for composers and reviewers to efficiently manage tracks, albums, instruments, and track statuses. The API enables:
 
----
+-   **Track creation, editing, and deletion** (by composers only)
+-   **Comment system** for feedback and collaboration
+-   **Review system** (future implementation)
+-   **Filtering and searching** by genre, mood, status, project type, and vocals needed
+-   **Role-based access control** (Composers vs. Reviewers)
 
-## 🚀 Introduction
-
-The **Music Productivity API** is built using **Django Rest Framework (DRF)** to streamline music composition and collaboration. This API allows **composers** to manage their projects efficiently, while **reviewers** can provide structured feedback without altering tracks. The API enforces strict role-based access control, ensuring transparency and security within the workflow.
+This API is built to scale with additional features like **album bulk updates, reviews, and audio file imports** in future releases.
 
 ---
 
-## 🔗 API Endpoints
+## 🚀 Features
 
-### 🔑 Authentication
-
-| HTTP Method | Endpoint                      | Description                              | Access        |
-| ----------- | ----------------------------- | ---------------------------------------- | ------------- |
-| `POST`      | `/dj-rest-auth/login/`        | Log in a user and receive an auth token. | Public        |
-| `POST`      | `/dj-rest-auth/logout/`       | Log out the user.                        | Authenticated |
-| `POST`      | `/dj-rest-auth/registration/` | Admin-only: Create new user accounts.    | Admin Only    |
-
-### 🎵 Tracks
-
-| HTTP Method | Endpoint        | Description                | Access                            |
-| ----------- | --------------- | -------------------------- | --------------------------------- |
-| `GET`       | `/tracks/`      | Retrieve all tracks.       | **Composers Only**                |
-| `POST`      | `/tracks/`      | Create a new track.        | **Composers Only**                |
-| `GET`       | `/tracks/<id>/` | Retrieve a specific track. | **Composers & Assigned Reviewer** |
-| `PUT`       | `/tracks/<id>/` | Update a track.            | **Composers Only**                |
-| `DELETE`    | `/tracks/<id>/` | Delete a track.            | **Composers Only**                |
-
-...
+-   **Tracks:** CRUD operations with status management
+-   **Comments:** Threaded discussions per track
+-   **Review System:** (Planned) Feedback & revision tracking for composers
+-   **Albums:** Group tracks, add cover art, and manage updates
+-   **Filtering & Search:** Quickly locate tracks based on metadata
+-   **Authentication:** Secure JWT-based authentication with role-based permissions
 
 ---
 
-## 📚 Testing
+## 🛠 Tech Stack
 
-The API has been tested using **Postman** to verify that all endpoints function correctly. Below are the key areas of testing:
-
-1. **Authentication**
-    - Login, Logout, Registration functionality.
-    - JWT Token handling and security.
-2. **Tracks & Albums**
-    - Creating, updating, deleting, and retrieving.
-    - Ensuring only authorized users can modify content.
-3. **Comments & Reviews**
-    - Posting, retrieving, and deleting comments.
-    - Ensuring reviewers can provide structured feedback.
-4. **Error Handling**
-    - Invalid requests return appropriate error messages.
-    - Proper HTTP status codes (400, 401, 403, 404, 500) are used.
-5. **Security**
-    - Permissions enforce proper access control.
-    - Unauthorized users cannot modify others' content.
+-   **Backend:** Django 4.2, Django REST Framework
+-   **Database:** PostgreSQL
+-   **Authentication:** dj-rest-auth with JWT tokens
+-   **Deployment:** (Specify if deployed)
+-   **Other Tools:** Django Filters, Django CORS Headers, Celery (if applicable)
 
 ---
 
-## 📚 Security Considerations
+## 🏗 Setup & Installation
 
--   **Environment Variables:**
+### 1️⃣ Clone the Repository
 
-    -   All sensitive credentials (DB URL, secret keys, JWT secrets) are stored in **environment variables**.
-    -   `.env` files are used locally but are **never committed** to GitHub.
+```sh
+git clone <repo_url>
+cd backend
+```
 
--   **Permissions & Authentication:**
+### 2️⃣ Create and Activate Virtual Environment
 
-    -   Role-based access control prevents unauthorized actions.
-    -   JWT authentication ensures secure API access.
+```sh
+python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+.venv\Scripts\activate     # Windows
+```
 
--   **CORS Handling:**
+### 3️⃣ Install Dependencies
 
-    -   Django CORS Headers ensures controlled cross-origin access.
-    -   Only whitelisted domains can interact with the API.
+```sh
+pip install -r requirements.txt
+```
 
--   **Debug Mode:**
-    -   `DEBUG = False` in production to prevent leaks of sensitive information.
+### 4️⃣ Set Up Environment Variables
+
+Create a `.env` file in the root directory and add:
+
+```env
+SECRET_KEY=your-secret-key
+DEBUG=True
+DATABASE_URL=your-database-url
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+```
+
+### 5️⃣ Apply Migrations & Create Superuser
+
+```sh
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+### 6️⃣ Run the Development Server
+
+```sh
+python manage.py runserver
+```
 
 ---
 
-## 📚 Agile Workflow
+## 🔬 Testing
 
-Project development follows **Agile methodology** with iterative improvements.
+Unit tests were run to verify authentication and role-based access. Example test output:
+
+```sh
+(.venv) mztr@Mac PP5-MP-API % python manage.py test mp_api.tests.test_auth
+Found 9 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+....===== In CustomLogoutView! =====
+===== request.data: {'refresh_token': '...'} =====
+
+----------------------------------------------------------------
+Ran 9 tests in 14.750s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+### **Tested Scenarios:**
+
+✅ Authentication (Login/Logout) works correctly
+✅ CRUD operations for Tracks & Comments
+✅ Role-based access (Composers vs. Reviewers)
+✅ Non-authorized users **cannot** access or modify tracks
+✅ Tracks list displays correctly with filters & search
 
 ---
 
-## Technologies Used
+## 🔥 Known Issues
 
--   **Backend**: Django, Django REST Framework (DRF)
--   **Database**: PostgreSQL (Heroku hosted)
--   **Authentication**: dj-rest-auth (JWT-based authentication)
--   **Deployment**: Heroku, Cloudinary
--   **Other Libraries**: Django CORS Headers, Gunicorn
+1. **Refresh Tokens**:
+
+    - Manually fetching refresh tokens works in tests, but automatic renewal causes session issues.
+    - **Solution:** Access tokens are set to **30 days** instead.
+
+2. **Instrument Editing Issue**:
+    - Tracks can be **created** with instruments but **not edited** with them currently.
+    - **Planned Fix:** Future patch.
 
 ---
+
+## 🚀 Future Enhancements
+
+-   **Review System**: Allow reviewers to provide structured feedback.
+-   **Audio File Upload**: Composers can attach preview tracks.
+-   **Better Search & Filters**: More granular search capabilities.
+-   **Bulk Album Edits**: Manage track statuses quickly.
+
+---
+
+## 📌 API Endpoints
+
+(TBD: Auto-generate API documentation from Django REST Framework or Swagger)
+
+---
+
+## 🎯 Conclusion
+
+This API is built for **speed, efficiency, and scalability**, ensuring a smooth workflow for composers and reviewers in the music industry. The backend is structured with **future growth in mind**, making it easy to add new features as needed.
+
+---
+
+**✅ Backend DONE. Next Up: Frontend README.**
+
+🔥 Let’s go.

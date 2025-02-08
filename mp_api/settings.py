@@ -64,15 +64,17 @@ REST_AUTH = {
     'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
     'JWT_AUTH_SAMESITE': 'None',
     'JWT_AUTH_SECURE': False,        # We can keep this False in dev
-    'JWT_AUTH_HTTPONLY': True,       # We'll override in test mode below
+    'JWT_AUTH_HTTPONLY': False,       # We'll override in test mode below
     'OLD_PASSWORD_FIELD_ENABLED': True,
     'LOGOUT_ON_PASSWORD_CHANGE': False,
     'SESSION_LOGIN': False,
+    'USER_DETAILS_SERIALIZER': 'mp_api.serializers.UserSerializer',
 }
 
 SIMPLE_JWT = {
     # So the refresh token we get at login doesn't change
-    'ROTATE_REFRESH_TOKENS': False,
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
@@ -119,6 +121,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
 
     # Third-Party Apps
     'rest_framework',

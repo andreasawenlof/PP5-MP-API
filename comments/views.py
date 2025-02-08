@@ -3,18 +3,18 @@ from rest_framework import generics
 from .models import Comment
 from .serializers import CommentSerializer
 from rest_framework.permissions import IsAuthenticated
-from mp_api.permissions import IsOwnerOrReadOnly
+from mp_api.permissions import IsOwnerOrReadOnly, IsComposerOrOwner
 from rest_framework import serializers
 
 
 class CommentList(generics.ListCreateAPIView):
     """
     List all comments or create a new comment.
-    - Only authenticated composers/owners can create/view comments.
-    - Reviewers & Unauthorized Users see NOTHING (no comments, no form, no errors).
+    - ✅ Any authenticated user can view/create comments (for now).
+    - 🔒 Role logic is DISABLED but kept for later.
     """
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsComposerOrOwner]
 
     def get_queryset(self):
         """✅ Return only comments for a specific track or album."""
@@ -36,18 +36,20 @@ class CommentList(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-        """✅ Only composers can create comments. Reviewers see NOTHING."""
+        """✅ Any authenticated user can create comments (for now)."""
         user = self.request.user
-        if not user.profile.is_composer:
-            raise NotFound()  # ✅ Pretend the feature doesn’t exist
+        # 🔒 Keep the role logic but disable it for submission
+        # if not user.profile.is_composer:
+        #     raise NotFound()  # ✅ Pretend the feature doesn’t exist
         serializer.save(owner=self.request.user)
 
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve comment details.
-    - ✅ Only composers & owners can view comments.
-    - ❌ Reviewers & unauthorized users see NOTHING (404).
+    - ✅ Any authenticated user can view comments (for now).
+    - ✅ Only owners can edit/delete their own comments.
+    - 🔒 Role logic is DISABLED but kept for later.
     """
     queryset = Comment.objects.select_related("owner", "track", "album")
     serializer_class = CommentSerializer
@@ -55,8 +57,8 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         """
-        ✅ Reviewers & Unauthorized Users get a 404.
-        ✅ Only composers & owners can access comments.
+        ✅ Only owners can edit/delete their comments.
+        🔒 Reviewers & Unauthorized Users logic is DISABLED for now.
         """
         user = self.request.user
         comment_id = self.kwargs["pk"]
@@ -66,11 +68,11 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
         except Comment.DoesNotExist:
             raise NotFound()
 
-        # ✅ Composers & Owners can access everything
-        if user.profile.is_composer or obj.owner == user:
-            return obj
+        # 🔒 Keep the role logic but disable it for submission
+        # if not user.profile.is_composer and obj.owner != user:
+        #     raise NotFound()  # ✅ Reviewers & Unauthorized Users see NOTHING
 
-        raise NotFound()  # ✅ Reviewers & Unauthorized Users see NOTHING
+        return obj
 
     def perform_update(self, serializer):
         """
