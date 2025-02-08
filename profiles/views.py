@@ -8,12 +8,12 @@ from .models import Profile
 
 class ProfileList(generics.ListAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsComposerOrOwner]
 
 
 class ProfileDetail(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrOwner]
+    permission_classes = [IsComposerOrOwner]
 
     def perform_update(self, serializer):
         """✅ Only the profile owner can edit their own profile."""
