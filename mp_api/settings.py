@@ -37,32 +37,37 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = "DEVELOPER" in os.environ
 
-ALLOWED_HOSTS = [
-    os.environ.get('ALLOWED_HOST'),
-    'localhost',
-    '127.0.0.1',
-    'localhost:3000',  # React frontend
-    'mp-frontend-4a5fc1537e05.herokuapp.com',  # React frontend deploy
-    'mp-api-2f2442c94bb0.herokuapp.com'  # backend deploy
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST", "").split(",") + [
+    "localhost",
+    "127.0.0.1",
+    "localhost:3000",  # React frontend
+    "mp-frontend-4a5fc1537e05.herokuapp.com",  # React frontend deploy
+    "mp-api-2f2442c94bb0.herokuapp.com",  # backend deploy
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000",
-                        "http://localhost:8000",
-                        "https://mp-frontend-4a5fc1537e05.herokuapp.com",
-                        "https://mp-api-2f2442c94bb0.herokuapp.com"
-                        ]
+CORS_ALLOWED_ORIGINS = [
+    "https://mp-frontend-4a5fc1537e05.herokuapp.com",  # ✅ Your deployed frontend
+    "http://localhost:3000"  # ✅ Local frontend for testing
+]
+
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
     "https://mp-frontend-4a5fc1537e05.herokuapp.com",
-    "https://mp-api-2f2442c94bb0.herokuapp.com"
+    "http://localhost:3000"
 ]
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = [
-    "accept", "authorization", "content-type", "x-csrftoken", "x-requested-with",
+CORS_ALLOW_CREDENTIALS = True  # ✅ Allow cookies for authentication
+
+CORS_ALLOW_METHODS = [
+    "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
 ]
-CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 
 # -----------------------------------------------------
