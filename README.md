@@ -84,24 +84,15 @@ python manage.py runserver
 
 ---
 
-## 🔬 Testing
+## ✅ Testing
 
-Unit tests were run to verify authentication and role-based access. Example test output:
+This project has been tested using **automated unit tests** and **manual API tests**.
 
-```sh
-(.venv) mztr@Mac PP5-MP-API % python manage.py test mp_api.tests.test_auth
-Found 9 test(s).
-Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-....===== In CustomLogoutView! =====
-===== request.data: {'refresh_token': '...'} =====
+-   **Automated Tests:** Django's built-in test framework was used for **authentication, CRUD operations, and role-based access.**
+-   **Manual API Testing:** Postman was used to verify **correct responses and error handling.**
+-   **PEP8 Compliance:** The code was checked against PEP8 for formatting errors.
 
-----------------------------------------------------------------
-Ran 9 tests in 14.750s
-
-OK
-Destroying test database for alias 'default'...
-```
+📌 **For a detailed breakdown of testing results, see [`TESTING.md`](TESTING.md).**
 
 ### **Tested Scenarios:**
 

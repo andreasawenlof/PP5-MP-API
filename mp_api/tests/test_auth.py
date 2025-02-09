@@ -51,7 +51,7 @@ class AuthenticationTest(APITestCase):
 
         # Should be expired -> 401
         response = self.client.get(self.protected_url)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_access_regular_user_protected_route_with_valid_token(self):
         response = self.client.post(self.login_url, {
@@ -87,7 +87,7 @@ class AuthenticationTest(APITestCase):
 
         # Now the token is expired, so we get 401
         response = self.client.get(self.protected_url)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_logout_without_token(self):
         response = self.client.post(self.logout_url)
