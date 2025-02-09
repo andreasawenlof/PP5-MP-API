@@ -17,8 +17,10 @@ class CustomLogoutView(APIView):
         refresh_token = request.data.get("refresh_token")
         if not refresh_token:
             print("===== No refresh_token found in request.data =====")
-            return Response({"detail": "Refresh token not provided."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Refresh token not provided."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             token = RefreshToken(refresh_token)
             token.blacklist()
@@ -26,5 +28,4 @@ class CustomLogoutView(APIView):
             print(f"===== Blacklist Exception: {e} =====")
             pass  # We'll still say logout is successful
 
-        return Response({"detail": "Logout successful."},
-                        status=status.HTTP_200_OK)
+        return Response({"detail": "Logout successful."}, status=status.HTTP_200_OK)

@@ -11,16 +11,19 @@ class AlbumListCreate(generics.ListCreateAPIView):
     serializer_class = AlbumSerializer
     permission_classes = [IsAuthenticated]
 
-    filter_backends = [DjangoFilterBackend,
-                       filters.OrderingFilter, filters.SearchFilter]
-    filterset_fields = ['status', 'genre', 'mood', 'project_type']
-    ordering_fields = ['created_at', 'updated_at', 'title']
-    search_fields = ['title', 'notes']
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
+    filterset_fields = ["status", "genre", "mood", "project_type"]
+    ordering_fields = ["created_at", "updated_at", "title"]
+    search_fields = ["title", "notes"]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request
-        context['is_detail'] = False
+        context["request"] = self.request
+        context["is_detail"] = False
         return context
 
 
@@ -31,6 +34,6 @@ class AlbumDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request
-        context['is_detail'] = True
+        context["request"] = self.request
+        context["is_detail"] = True
         return context

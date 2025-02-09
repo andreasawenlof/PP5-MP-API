@@ -9,28 +9,25 @@ import time
 class AuthenticationTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpass123"
+            username="testuser", password="testpass123"
         )
-        self.login_url = '/dj-rest-auth/login/'
-        self.logout_url = '/dj-rest-auth/logout/'
-        self.refresh_url = '/dj-rest-auth/token/refresh/'
+        self.login_url = "/dj-rest-auth/login/"
+        self.logout_url = "/dj-rest-auth/logout/"
+        self.refresh_url = "/dj-rest-auth/token/refresh/"
         self.protected_url = reverse("track-list")  # Example endpoint
 
     def test_login_success(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "testpass123"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "testpass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
 
     def test_login_invalid_credentials(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "wrongpass"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "wrongpass"}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_access_protected_route_without_token(self):
@@ -38,10 +35,9 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_expiry(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "testpass123"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "testpass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         access_token = response.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
@@ -54,10 +50,9 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_access_regular_user_protected_route_with_valid_token(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "testpass123"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "testpass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         access_token = response.data["access"]
 
@@ -66,19 +61,16 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_logout(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "testpass123"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "testpass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         access_token = response.data["access"]
         refresh_token = response.data["refresh"]
 
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         logout_response = self.client.post(
-            self.logout_url,
-            {"refresh_token": refresh_token},
-            format="json"
+            self.logout_url, {"refresh_token": refresh_token}, format="json"
         )
         self.assertEqual(logout_response.status_code, status.HTTP_200_OK)
 
@@ -94,10 +86,9 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_refresh_token(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "testpass123"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "testpass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         refresh_token = response.data["refresh"]
 
@@ -108,18 +99,18 @@ class AuthenticationTest(APITestCase):
         self.assertIn("access", response.data)
 
     def test_token_blacklist_after_logout(self):
-        response = self.client.post(self.login_url, {
-            "username": "testuser",
-            "password": "testpass123"
-        })
+        response = self.client.post(
+            self.login_url, {"username": "testuser", "password": "testpass123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         access_token = response.data["access"]
         refresh_token = response.data["refresh"]
 
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         # Logout (blacklist token)
-        self.client.post(self.logout_url, {
-                         "refresh_token": refresh_token}, format="json")
+        self.client.post(
+            self.logout_url, {"refresh_token": refresh_token}, format="json"
+        )
 
         # Attempt to refresh => should fail (401)
         response = self.client.post(

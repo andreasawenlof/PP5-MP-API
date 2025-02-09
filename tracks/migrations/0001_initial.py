@@ -10,36 +10,128 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('albums', '0001_initial'),
+        ("albums", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Instrument',
+            name="Instrument",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Track',
+            name="Track",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('notes', models.TextField(blank=True, default='')),
-                ('status', models.CharField(choices=[('in_progress', 'In Progress'), ('review', 'Ready for Review'), ('completed', 'Completed and Reviewed')], default='in_progress', max_length=20)),
-                ('project_type', models.CharField(choices=[('quantity', 'Quantity'), ('quality', 'Quality'), ('custom', 'Custom Work'), ('other', 'Other')], default='quantity', max_length=20)),
-                ('genre', models.CharField(choices=[('rock', 'Rock'), ('pop', 'Pop'), ('electronic', 'Electronic'), ('soundtrack', 'Soundtrack'), ('other', 'Other')], default='other', max_length=20)),
-                ('mood', models.CharField(choices=[('happy', 'Happy'), ('sad', 'Sad'), ('energetic', 'Energetic'), ('relaxed', 'Relaxed'), ('dramatic', 'Dramatic'), ('hype', 'Hype'), ('other', 'Other')], default='other', max_length=20)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('album', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='album_tracks', to='albums.album')),
-                ('assigned_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_tracks', to=settings.AUTH_USER_MODEL)),
-                ('instruments', models.ManyToManyField(blank=True, related_name='instrument_tracks', to='tracks.instrument')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("notes", models.TextField(blank=True, default="")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("in_progress", "In Progress"),
+                            ("review", "Ready for Review"),
+                            ("completed", "Completed and Reviewed"),
+                        ],
+                        default="in_progress",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "project_type",
+                    models.CharField(
+                        choices=[
+                            ("quantity", "Quantity"),
+                            ("quality", "Quality"),
+                            ("custom", "Custom Work"),
+                            ("other", "Other"),
+                        ],
+                        default="quantity",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "genre",
+                    models.CharField(
+                        choices=[
+                            ("rock", "Rock"),
+                            ("pop", "Pop"),
+                            ("electronic", "Electronic"),
+                            ("soundtrack", "Soundtrack"),
+                            ("other", "Other"),
+                        ],
+                        default="other",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "mood",
+                    models.CharField(
+                        choices=[
+                            ("happy", "Happy"),
+                            ("sad", "Sad"),
+                            ("energetic", "Energetic"),
+                            ("relaxed", "Relaxed"),
+                            ("dramatic", "Dramatic"),
+                            ("hype", "Hype"),
+                            ("other", "Other"),
+                        ],
+                        default="other",
+                        max_length=20,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "album",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="album_tracks",
+                        to="albums.album",
+                    ),
+                ),
+                (
+                    "assigned_user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_tracks",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "instruments",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="instrument_tracks",
+                        to="tracks.instrument",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['updated_at'],
+                "ordering": ["updated_at"],
             },
         ),
     ]

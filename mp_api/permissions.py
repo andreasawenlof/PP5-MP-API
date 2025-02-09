@@ -21,9 +21,7 @@ class IsComposerOrReviewer(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
-        return (
-            (user.profile.is_composer or user.profile.is_reviewer)
-        )
+        return user.profile.is_composer or user.profile.is_reviewer
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -51,7 +49,7 @@ class IsReviewer(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # ✅ Reviewers can see only tracks marked as "Ready for Review"
-        if hasattr(obj, 'status') and obj.status == "ready_for_review":
+        if hasattr(obj, "status") and obj.status == "ready_for_review":
             return True
 
         # ❌ Reviews cannot be edited or deleted after submission

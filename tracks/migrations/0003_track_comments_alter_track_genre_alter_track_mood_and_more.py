@@ -7,29 +7,49 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('comments', '0002_alter_comment_track'),
-        ('tracks', '0002_genre_mood_projecttype_delete_instrument_and_more'),
+        ("comments", "0002_alter_comment_track"),
+        ("tracks", "0002_genre_mood_projecttype_delete_instrument_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='track',
-            name='comments',
-            field=models.ManyToManyField(blank=True, related_name='track_comments', to='comments.comment'),
+            model_name="track",
+            name="comments",
+            field=models.ManyToManyField(
+                blank=True, related_name="track_comments", to="comments.comment"
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='genre',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='genre_tracks', to='tracks.genre'),
+            model_name="track",
+            name="genre",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="genre_tracks",
+                to="tracks.genre",
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='mood',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='mood_tracks', to='tracks.mood'),
+            model_name="track",
+            name="mood",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="mood_tracks",
+                to="tracks.mood",
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='project_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='project_tracks', to='tracks.projecttype'),
+            model_name="track",
+            name="project_type",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="project_tracks",
+                to="tracks.projecttype",
+            ),
         ),
     ]

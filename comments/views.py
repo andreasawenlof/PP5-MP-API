@@ -13,6 +13,7 @@ class CommentList(generics.ListCreateAPIView):
     - ✅ Any authenticated user can view/create comments (for now).
     - 🔒 Role logic is DISABLED but kept for later.
     """
+
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated, IsComposerOrOwner]
 
@@ -51,6 +52,7 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     - ✅ Only owners can edit/delete their own comments.
     - 🔒 Role logic is DISABLED but kept for later.
     """
+
     queryset = Comment.objects.select_related("owner", "track", "album")
     serializer_class = CommentSerializer
     permission_classes = [IsOwnerOrReadOnly]
@@ -78,12 +80,13 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
         """
         Make sure a track or album is associated when updating a comment.
         """
-        track = self.request.data.get('track')
-        album = self.request.data.get('album')
+        track = self.request.data.get("track")
+        album = self.request.data.get("album")
 
         if not track and not album:
             raise serializers.ValidationError(
-                "A comment must be associated with either a track or an album.")
+                "A comment must be associated with either a track or an album."
+            )
 
         # ✅ Finally save the updated data!
         serializer.save()

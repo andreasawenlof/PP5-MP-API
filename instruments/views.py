@@ -13,6 +13,7 @@ class InstrumentCategoryList(generics.ListCreateAPIView):
     ✅ Composers can create/list instrument categories.
     ✅ Reviewers/unauthorized users see NOTHING.
     """
+
     serializer_class = InstrumentCategorySerializer
     permission_classes = [IsAuthenticated]
 
@@ -36,6 +37,7 @@ class InstrumentList(generics.ListCreateAPIView):
     ✅ Reviewers/unauthorized users see NOTHING.
     ✅ Filtering & search enabled for composers.
     """
+
     serializer_class = InstrumentSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -62,6 +64,7 @@ class InstrumentCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     ✅ Composers can view/edit/delete instrument categories.
     ✅ Reviewers/unauthorized users get a 404.
     """
+
     serializer_class = InstrumentCategorySerializer
     permission_classes = [IsOwnerOrReadOnly]
 
@@ -78,6 +81,7 @@ class InstrumentDetail(generics.RetrieveUpdateDestroyAPIView):
     ✅ Composers can view/edit/delete instruments.
     ✅ Reviewers/unauthorized users get a 404.
     """
+
     serializer_class = InstrumentSerializer
     permission_classes = [IsOwnerOrReadOnly]
 

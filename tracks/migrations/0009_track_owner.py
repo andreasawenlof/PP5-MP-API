@@ -9,14 +9,19 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('tracks', '0008_remove_track_review_status'),
+        ("tracks", "0008_remove_track_review_status"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='track',
-            name='owner',
-            field=models.ForeignKey(default=2, on_delete=django.db.models.deletion.CASCADE, related_name='owned_tracks', to=settings.AUTH_USER_MODEL),
+            model_name="track",
+            name="owner",
+            field=models.ForeignKey(
+                default=2,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="owned_tracks",
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
     ]

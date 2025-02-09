@@ -32,16 +32,16 @@ class ProjectType(models.Model):
 class Track(models.Model):
 
     STATUS_CHOICES = [
-        ('not_started', 'Not Started'),
-        ('in_production', 'In Production'),
-        ('ready_for_mixing', 'Ready for Mixing'),
-        ('ready_for_review', 'Ready for Review'),
-        ('completed_and_reviewed', 'Completed and Reviewed'),
+        ("not_started", "Not Started"),
+        ("in_production", "In Production"),
+        ("ready_for_mixing", "Ready for Mixing"),
+        ("ready_for_review", "Ready for Review"),
+        ("completed_and_reviewed", "Completed and Reviewed"),
     ]
 
     VOCALS_STATUS_CHOICES = [
-        ('vocals_in_progress', 'In Progress'),
-        ('vocals_done', 'Done'),
+        ("vocals_in_progress", "In Progress"),
+        ("vocals_done", "Done"),
     ]
 
     title = models.CharField(max_length=255, blank=False, null=False)
@@ -50,7 +50,11 @@ class Track(models.Model):
     )
     notes = models.TextField(blank=True, default="")
     status = models.CharField(
-        max_length=25, choices=STATUS_CHOICES, default='not_started', blank=False, null=False
+        max_length=25,
+        choices=STATUS_CHOICES,
+        default="not_started",
+        blank=False,
+        null=False,
     )
 
     vocals_needed = models.BooleanField(default=False)
@@ -59,29 +63,49 @@ class Track(models.Model):
         choices=VOCALS_STATUS_CHOICES,
         blank=True,
         null=True,
-        default='vocals_in_progress'
+        default="vocals_in_progress",
     )
 
     project_type = models.ForeignKey(
-        ProjectType, on_delete=models.SET_NULL, null=True, blank=True, related_name="project_tracks"
+        ProjectType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="project_tracks",
     )  # ✅ Updated related_name
 
     genre = models.ForeignKey(
-        Genre, on_delete=models.SET_NULL, null=True, blank=True, related_name="genre_tracks"
+        Genre,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="genre_tracks",
     )  # ✅ Updated related_name
 
     mood = models.ForeignKey(
-        Mood, on_delete=models.SET_NULL, null=True, blank=True, related_name="mood_tracks"
+        Mood,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="mood_tracks",
     )  # ✅ Updated related_name
 
     album = models.ForeignKey(
-        Album, on_delete=models.SET_NULL, null=True, blank=True, related_name="album_tracks"
+        Album,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="album_tracks",
     )
     instruments = models.ManyToManyField(
         Instrument, blank=True, related_name="instrument_tracks"
     )
     assigned_composer = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_tracks"
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_tracks",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -101,16 +125,17 @@ class Track(models.Model):
         if not self.vocals_needed:
             self.vocals_status = None
         elif self.vocals_status is None:
-            self.vocals_status = 'vocals_in_progress'
+            self.vocals_status = "vocals_in_progress"
         super().save(*args, **kwargs)
 
     def set_review_status(self, new_status):
-        if self.status == 'ready_for_review':
+        if self.status == "ready_for_review":
             self.review_status = new_status
             self.save()
         else:
             raise ValidationError(
-                "Review status can only be changed when the track is ready for review.")
+                "Review status can only be changed when the track is ready for review."
+            )
 
     @classmethod
     def bulk_update_tracks(cls, track_ids, **kwargs):
@@ -123,15 +148,17 @@ class Track(models.Model):
         tracks = cls.objects.filter(id__in=track_ids)
 
         # Validate the status if it's being updated
-        if 'status' in kwargs and kwargs['status'] not in dict(cls.STATUS_CHOICES):
+        if "status" in kwargs and kwargs["status"] not in dict(cls.STATUS_CHOICES):
             raise ValueError("Invalid status")
 
         # Validate the vocals_status if it's being updated
-        if 'vocals_status' in kwargs and kwargs['vocals_status'] not in dict(cls.VOCALS_STATUS_CHOICES):
+        if "vocals_status" in kwargs and kwargs["vocals_status"] not in dict(
+            cls.VOCALS_STATUS_CHOICES
+        ):
             raise ValueError("Invalid vocals status")
 
         # Handle special case for vocals_needed
-        if 'vocals_needed' in kwargs and not kwargs['vocals_needed']:
-            kwargs['vocals_status'] = None
+        if "vocals_needed" in kwargs and not kwargs["vocals_needed"]:
+            kwargs["vocals_status"] = None
 
         tracks.update(**kwargs)

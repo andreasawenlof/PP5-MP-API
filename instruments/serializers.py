@@ -5,7 +5,7 @@ from .models import InstrumentCategory, Instrument
 class InstrumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = InstrumentCategory
-        fields = ['id', 'name']  # Include the ID and name in the response
+        fields = ["id", "name"]  # Include the ID and name in the response
 
 
 class InstrumentSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
         queryset=InstrumentCategory.objects.all(),
         slug_field="name",
         many=True,
-        required=False  # ✅ Now optional
+        required=False,  # ✅ Now optional
     )
 
     class Meta:
@@ -27,7 +27,8 @@ class InstrumentSerializer(serializers.ModelSerializer):
         # ✅ Get or create the default 'No Category Yet'
         if not category_names:
             default_category, _ = InstrumentCategory.objects.get_or_create(
-                name="No Category")
+                name="No Category"
+            )
             category_names = [default_category.name]
 
         # ✅ Create the instrument

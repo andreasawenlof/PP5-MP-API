@@ -7,33 +7,48 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracks', '0002_genre_mood_projecttype_delete_instrument_and_more'),
-        ('albums', '0001_initial'),
+        ("tracks", "0002_genre_mood_projecttype_delete_instrument_and_more"),
+        ("albums", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='album',
-            options={'ordering': ['-updated_at']},
+            name="album",
+            options={"ordering": ["-updated_at"]},
         ),
         migrations.AddField(
-            model_name='album',
-            name='notes',
-            field=models.TextField(blank=True, default=''),
+            model_name="album",
+            name="notes",
+            field=models.TextField(blank=True, default=""),
         ),
         migrations.AlterField(
-            model_name='album',
-            name='genre',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tracks.genre'),
+            model_name="album",
+            name="genre",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="tracks.genre",
+            ),
         ),
         migrations.AlterField(
-            model_name='album',
-            name='mood',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tracks.mood'),
+            model_name="album",
+            name="mood",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="tracks.mood",
+            ),
         ),
         migrations.AlterField(
-            model_name='album',
-            name='project_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tracks.projecttype'),
+            model_name="album",
+            name="project_type",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="tracks.projecttype",
+            ),
         ),
     ]

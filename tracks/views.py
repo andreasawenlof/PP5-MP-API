@@ -4,8 +4,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from .models import Track, Mood, Genre, ProjectType
-from .serializers import TrackSerializer, MoodSerializer, GenreSerializer, ProjectTypeSerializer, BulkTrackUpdateSerializer
-from mp_api.permissions import IsComposerOrOwner, IsReviewer, IsComposerOrReviewer, IsOwnerOrReadOnly
+from .serializers import (
+    TrackSerializer,
+    MoodSerializer,
+    GenreSerializer,
+    ProjectTypeSerializer,
+    BulkTrackUpdateSerializer,
+)
+from mp_api.permissions import (
+    IsComposerOrOwner,
+    IsReviewer,
+    IsComposerOrReviewer,
+    IsOwnerOrReadOnly,
+)
 
 
 class TrackListCreate(generics.ListCreateAPIView):
@@ -14,10 +25,14 @@ class TrackListCreate(generics.ListCreateAPIView):
     - Reviewers: See only 'ready_for_review' tracks, NO CREATE PERMISSION.
     - Normal users: See nothing.
     """
+
     serializer_class = TrackSerializer
     permission_classes = [IsAuthenticated, IsComposerOrReviewer]
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
 
     filterset_fields = {
         "assigned_composer": ["exact"],  # Filter by assigned composer
@@ -50,12 +65,11 @@ class TrackListCreate(generics.ListCreateAPIView):
         assigned_composer = self.request.user
 
         # Allow manual override if a composer is explicitly chosen
-        if serializer.validated_data.get('assigned_composer'):
-            assigned_composer = serializer.validated_data['assigned_composer']
+        if serializer.validated_data.get("assigned_composer"):
+            assigned_composer = serializer.validated_data["assigned_composer"]
 
         # Save the track with the assigned composer and owner
-        serializer.save(owner=self.request.user,
-                        assigned_composer=assigned_composer)
+        serializer.save(owner=self.request.user, assigned_composer=assigned_composer)
 
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -63,6 +77,7 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
     - Composers: Can view, update, and delete.
     - Reviewers: Can ONLY view 'ready_for_review' tracks (NO EDIT/DELETE).
     """
+
     serializer_class = TrackSerializer
     permission_classes = [IsAuthenticated, IsComposerOrReviewer]
 

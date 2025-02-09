@@ -6,28 +6,47 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracks', '0004_remove_track_comments'),
+        ("tracks", "0004_remove_track_comments"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='track',
-            old_name='assigned_user',
-            new_name='assigned_composer',
+            model_name="track",
+            old_name="assigned_user",
+            new_name="assigned_composer",
         ),
         migrations.AddField(
-            model_name='track',
-            name='vocals_needed',
+            model_name="track",
+            name="vocals_needed",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='track',
-            name='vocals_status',
-            field=models.CharField(blank=True, choices=[('vocals_in_progress', 'In Progress'), ('vocals_done', 'Done')], default='vocals_in_progress', max_length=20, null=True),
+            model_name="track",
+            name="vocals_status",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("vocals_in_progress", "In Progress"),
+                    ("vocals_done", "Done"),
+                ],
+                default="vocals_in_progress",
+                max_length=20,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='status',
-            field=models.CharField(choices=[('not_started', 'Not Started'), ('in_production', 'In Production'), ('ready_for_mixing', 'Ready for Mixing'), ('ready_for_review', 'Ready for Review'), ('completed_and_reviewed', 'Completed and Reviewed')], default='not_started', max_length=25),
+            model_name="track",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("not_started", "Not Started"),
+                    ("in_production", "In Production"),
+                    ("ready_for_mixing", "Ready for Mixing"),
+                    ("ready_for_review", "Ready for Review"),
+                    ("completed_and_reviewed", "Completed and Reviewed"),
+                ],
+                default="not_started",
+                max_length=25,
+            ),
         ),
     ]

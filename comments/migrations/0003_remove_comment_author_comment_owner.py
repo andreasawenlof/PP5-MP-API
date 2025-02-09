@@ -9,18 +9,22 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('comments', '0002_alter_comment_track'),
+        ("comments", "0002_alter_comment_track"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='comment',
-            name='author',
+            model_name="comment",
+            name="author",
         ),
         migrations.AddField(
-            model_name='comment',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="comment",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
     ]

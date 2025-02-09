@@ -7,53 +7,99 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('instruments', '0001_initial'),
-        ('tracks', '0001_initial'),
+        ("instruments", "0001_initial"),
+        ("tracks", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Genre',
+            name="Genre",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Mood',
+            name="Mood",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ProjectType',
+            name="ProjectType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.DeleteModel(
-            name='Instrument',
+            name="Instrument",
         ),
         migrations.AlterField(
-            model_name='track',
-            name='instruments',
-            field=models.ManyToManyField(blank=True, related_name='instrument_tracks', to='instruments.instrument'),
+            model_name="track",
+            name="instruments",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="instrument_tracks",
+                to="instruments.instrument",
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='genre',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tracks', to='tracks.genre'),
+            model_name="track",
+            name="genre",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="tracks",
+                to="tracks.genre",
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='mood',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tracks', to='tracks.mood'),
+            model_name="track",
+            name="mood",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="tracks",
+                to="tracks.mood",
+            ),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='project_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tracks', to='tracks.projecttype'),
+            model_name="track",
+            name="project_type",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="tracks",
+                to="tracks.projecttype",
+            ),
         ),
     ]

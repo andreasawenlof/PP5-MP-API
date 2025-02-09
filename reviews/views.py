@@ -10,15 +10,15 @@ class ReviewListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """ - Reviewers see all reviews for 'ready_for_review' tracks.
-            - Composers see everything. """
+        """- Reviewers see all reviews for 'ready_for_review' tracks.
+        - Composers see everything."""
         user = self.request.user
         if user.profile.is_composer:
             return Review.objects.all()
         return Review.objects.filter(track__status="ready_for_review")
 
     def perform_create(self, serializer):
-        """ 🔹 If review exists for track, append to history instead of creating a new one. """
+        """🔹 If review exists for track, append to history instead of creating a new one."""
         track = serializer.validated_data["track"]
         existing_review = Review.objects.filter(track=track).first()
 
@@ -28,7 +28,7 @@ class ReviewListCreate(generics.ListCreateAPIView):
                 review=existing_review,
                 editor=self.request.user,
                 updated_feedback=serializer.validated_data["feedback"],
-                revision_number=existing_review.history.count() + 1
+                revision_number=existing_review.history.count() + 1,
             )
             return  # Prevents new review creation
 
@@ -63,7 +63,9 @@ class ReviewHistoryListCreate(generics.ListCreateAPIView):
         user = self.request.user
         if user.profile.is_composer:
             return ReviewHistory.objects.all()
-        return ReviewHistory.objects.filter(review__track__status="ready_for_review", review__reviewer=user)
+        return ReviewHistory.objects.filter(
+            review__track__status="ready_for_review", review__reviewer=user
+        )
 
     def perform_create(self, serializer):
         serializer.save(editor=self.request.user)
@@ -81,4 +83,6 @@ class ReviewHistoryDetail(generics.RetrieveAPIView):  # ✅ Read-Only View
         user = self.request.user
         if user.profile.is_composer:
             return ReviewHistory.objects.all()
-        return ReviewHistory.objects.filter(review__track__status="ready_for_review", review__reviewer=user)
+        return ReviewHistory.objects.filter(
+            review__track__status="ready_for_review", review__reviewer=user
+        )

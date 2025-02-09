@@ -11,37 +11,92 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('tracks', '0001_initial'),
+        ("tracks", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Review',
+            name="Review",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('feedback', models.TextField()),
-                ('comment', models.TextField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('approved', 'Approved'), ('needs_revision', 'Needs Revision')], default='pending', max_length=20)),
-                ('reviewed_at', models.DateTimeField(auto_now_add=True)),
-                ('reviewer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to=settings.AUTH_USER_MODEL)),
-                ('track', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to='tracks.track')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("feedback", models.TextField()),
+                ("comment", models.TextField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("approved", "Approved"),
+                            ("needs_revision", "Needs Revision"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                ("reviewed_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "reviewer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="reviews",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "track",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="reviews",
+                        to="tracks.track",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-reviewed_at'],
+                "ordering": ["-reviewed_at"],
             },
         ),
         migrations.CreateModel(
-            name='ReviewHistory',
+            name="ReviewHistory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('edited_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_feedback', models.TextField()),
-                ('revision_number', models.IntegerField(default=1)),
-                ('editor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='review_edits', to=settings.AUTH_USER_MODEL)),
-                ('review', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='history', to='reviews.review')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("edited_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_feedback", models.TextField()),
+                ("revision_number", models.IntegerField(default=1)),
+                (
+                    "editor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="review_edits",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "review",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="history",
+                        to="reviews.review",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-edited_at'],
+                "ordering": ["-edited_at"],
             },
         ),
     ]

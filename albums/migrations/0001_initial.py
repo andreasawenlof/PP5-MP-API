@@ -8,25 +8,88 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Album',
+            name="Album",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('status', models.CharField(choices=[('in_progress', 'In Progress'), ('review', 'Ready for Review'), ('completed', 'Completed and Reviewed')], default='in_progress', max_length=20)),
-                ('cover_art', cloudinary.models.CloudinaryField(blank=True, max_length=255, null=True, verbose_name='image')),
-                ('project_type', models.CharField(choices=[('quantity', 'Quantity'), ('quality', 'Quality'), ('custom', 'Custom Work'), ('other', 'Other')], default='quantity', max_length=20)),
-                ('genre', models.CharField(choices=[('rock', 'Rock'), ('pop', 'Pop'), ('electronic', 'Electronic'), ('soundtrack', 'Soundtrack'), ('other', 'Other')], default='other', max_length=20)),
-                ('mood', models.CharField(choices=[('happy', 'Happy'), ('sad', 'Sad'), ('energetic', 'Energetic'), ('relaxed', 'Relaxed'), ('dramatic', 'Dramatic'), ('hype', 'Hype'), ('other', 'Other')], default='other', max_length=20)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("in_progress", "In Progress"),
+                            ("review", "Ready for Review"),
+                            ("completed", "Completed and Reviewed"),
+                        ],
+                        default="in_progress",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "cover_art",
+                    cloudinary.models.CloudinaryField(
+                        blank=True, max_length=255, null=True, verbose_name="image"
+                    ),
+                ),
+                (
+                    "project_type",
+                    models.CharField(
+                        choices=[
+                            ("quantity", "Quantity"),
+                            ("quality", "Quality"),
+                            ("custom", "Custom Work"),
+                            ("other", "Other"),
+                        ],
+                        default="quantity",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "genre",
+                    models.CharField(
+                        choices=[
+                            ("rock", "Rock"),
+                            ("pop", "Pop"),
+                            ("electronic", "Electronic"),
+                            ("soundtrack", "Soundtrack"),
+                            ("other", "Other"),
+                        ],
+                        default="other",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "mood",
+                    models.CharField(
+                        choices=[
+                            ("happy", "Happy"),
+                            ("sad", "Sad"),
+                            ("energetic", "Energetic"),
+                            ("relaxed", "Relaxed"),
+                            ("dramatic", "Dramatic"),
+                            ("hype", "Hype"),
+                            ("other", "Other"),
+                        ],
+                        default="other",
+                        max_length=20,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ['updated_at'],
+                "ordering": ["updated_at"],
             },
         ),
     ]

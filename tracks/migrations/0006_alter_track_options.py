@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracks', '0005_rename_assigned_user_track_assigned_composer_and_more'),
+        ("tracks", "0005_rename_assigned_user_track_assigned_composer_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='track',
-            options={'ordering': ['-updated_at']},
+            name="track",
+            options={"ordering": ["-updated_at"]},
         ),
     ]

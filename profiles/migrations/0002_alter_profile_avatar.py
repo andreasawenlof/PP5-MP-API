@@ -7,13 +7,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profiles', '0001_initial'),
+        ("profiles", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='avatar',
-            field=cloudinary.models.CloudinaryField(blank=True, default='../default_profile_lhtmj4', max_length=255, null=True, verbose_name='image'),
+            model_name="profile",
+            name="avatar",
+            field=cloudinary.models.CloudinaryField(
+                blank=True,
+                default="../default_profile_lhtmj4",
+                max_length=255,
+                null=True,
+                verbose_name="image",
+            ),
         ),
     ]

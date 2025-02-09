@@ -184,3 +184,5 @@ erd.json
 erd.svg
 models.txt
 exportmodels.py
+.flake8
+**.flake8

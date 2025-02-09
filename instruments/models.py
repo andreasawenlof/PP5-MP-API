@@ -14,9 +14,8 @@ class InstrumentCategory(models.Model):
 
 class Instrument(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    categories = models.ManyToManyField(
-        InstrumentCategory, related_name="instruments")
-    image = CloudinaryField('image', blank=True, null=True)
+    categories = models.ManyToManyField(InstrumentCategory, related_name="instruments")
+    image = CloudinaryField("image", blank=True, null=True)
 
     class Meta:
         # ✅ Always return instruments in alphabetical order

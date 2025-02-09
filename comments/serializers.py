@@ -11,30 +11,26 @@ class CommentSerializer(serializers.ModelSerializer):
     Serializer for the Comment model.
     Handles serialization and deserialization of Comment objects.
     """
-    owner = serializers.ReadOnlyField(source='owner.username')
-    display_name = serializers.ReadOnlyField(
-        source='owner.profile.display_name')
+
+    owner = serializers.ReadOnlyField(source="owner.username")
+    display_name = serializers.ReadOnlyField(source="owner.profile.display_name")
     profile_image = serializers.CharField(
-        source='owner.profile.avatar.url', read_only=True
+        source="owner.profile.avatar.url", read_only=True
     )
 
     is_composer = serializers.BooleanField(
-        source='owner.profile.is_composer', read_only=True
+        source="owner.profile.is_composer", read_only=True
     )
     is_reviewer = serializers.BooleanField(
-        source='owner.profile.is_reviewer', read_only=True
+        source="owner.profile.is_reviewer", read_only=True
     )
 
     track = serializers.PrimaryKeyRelatedField(
-        queryset=Track.objects.all(),
-        required=False,
-        allow_null=True
+        queryset=Track.objects.all(), required=False, allow_null=True
     )
 
     album = serializers.PrimaryKeyRelatedField(
-        queryset=Album.objects.all(),
-        required=False,
-        allow_null=True
+        queryset=Album.objects.all(), required=False, allow_null=True
     )
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
@@ -48,22 +44,33 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = [
-            'id', 'owner', 'display_name', 'profile_image', 'track', 'album', 'content', 'is_composer', 'is_reviewer',
-            'created_at', 'updated_at'
+            "id",
+            "owner",
+            "display_name",
+            "profile_image",
+            "track",
+            "album",
+            "content",
+            "is_composer",
+            "is_reviewer",
+            "created_at",
+            "updated_at",
         ]
 
     def validate(self, data):
         """
         Validate that a comment is associated with either a track or an album, but not both.
         """
-        track = data.get('track')
-        album = data.get('album')
+        track = data.get("track")
+        album = data.get("album")
 
         if track and album:
             raise serializers.ValidationError(
-                "A comment can only be associated with either a track or an album, not both.")
+                "A comment can only be associated with either a track or an album, not both."
+            )
         if not track and not album:
             raise serializers.ValidationError(
-                "A comment must be associated with either a track or an album.")
+                "A comment must be associated with either a track or an album."
+            )
 
         return data

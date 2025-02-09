@@ -6,14 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracks', '0005_rename_assigned_user_track_assigned_composer_and_more'),
-        ('albums', '0003_album_owner_alter_album_status'),
+        ("tracks", "0005_rename_assigned_user_track_assigned_composer_and_more"),
+        ("albums", "0003_album_owner_alter_album_status"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='album',
-            name='tracks',
-            field=models.ManyToManyField(blank=True, related_name='albums', to='tracks.track'),
+            model_name="album",
+            name="tracks",
+            field=models.ManyToManyField(
+                blank=True, related_name="albums", to="tracks.track"
+            ),
         ),
     ]

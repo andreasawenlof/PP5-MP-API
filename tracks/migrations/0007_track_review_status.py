@@ -6,13 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracks', '0006_alter_track_options'),
+        ("tracks", "0006_alter_track_options"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='track',
-            name='review_status',
-            field=models.CharField(choices=[('not_reviewed', 'Not Reviewed'), ('in_review', 'In Review'), ('revision_requested', 'Revision Requested'), ('approved', 'Approved')], default='not_reviewed', max_length=25),
+            model_name="track",
+            name="review_status",
+            field=models.CharField(
+                choices=[
+                    ("not_reviewed", "Not Reviewed"),
+                    ("in_review", "In Review"),
+                    ("revision_requested", "Revision Requested"),
+                    ("approved", "Approved"),
+                ],
+                default="not_reviewed",
+                max_length=25,
+            ),
         ),
     ]
