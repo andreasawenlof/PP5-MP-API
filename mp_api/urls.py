@@ -4,6 +4,7 @@ from tracks.views import (
     TrackListCreate, TrackDetail, MoodListCreate, GenreListCreate,
     ProjectTypeListCreate, BulkTrackUpdateView
 )
+from .views import home
 from mp_api.auth_views import CustomLogoutView  # Import your custom logout view
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from django.http import JsonResponse
@@ -31,6 +32,7 @@ urlpatterns = [
     path('csrf/', csrf_token_view, name='csrf'),
 
     # ✅ API Endpoints
+    path("", home, name="home"),
     path('api/tracks/', TrackListCreate.as_view(), name='track-list'),
     path('api/tracks/<int:pk>/', TrackDetail.as_view(), name='track-detail'),
     path('api/tracks/bulk-update/',
