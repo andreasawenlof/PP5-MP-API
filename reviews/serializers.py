@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Review, ReviewHistory
-from tracks.models import Track
 
 
 class ReviewHistorySerializer(serializers.ModelSerializer):

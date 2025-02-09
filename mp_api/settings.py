@@ -11,13 +11,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import sys
 from pathlib import Path
 import dj_database_url
 from datetime import timedelta
 
+import os
+
 if os.path.exists("env.py"):
-    import env
+    import env  # ✅ This ensures env.py is actually loaded
 
 
 CLOUDINARY_STORAGE = {"CLOUDINARY_URL": os.environ.get("CLOUDINARY_URL")}
@@ -75,8 +76,8 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "my-app-auth",
     "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
     "JWT_AUTH_SAMESITE": "None",
-    "JWT_AUTH_SECURE": False,  # We can keep this False in dev
-    "JWT_AUTH_HTTPONLY": False,  # We'll override in test mode below
+    "JWT_AUTH_SECURE": True,  # We can keep this False in dev
+    "JWT_AUTH_HTTPONLY": True,  # We'll override in test mode below
     "OLD_PASSWORD_FIELD_ENABLED": True,
     "LOGOUT_ON_PASSWORD_CHANGE": False,
     "SESSION_LOGIN": False,

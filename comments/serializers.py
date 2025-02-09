@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import Comment
 from tracks.models import Track
 from albums.models import Album
-from profiles.models import Profile
 
 
 class CommentSerializer(serializers.ModelSerializer):

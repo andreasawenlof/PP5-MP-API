@@ -19,7 +19,7 @@ class CommentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """✅ Return only comments for a specific track or album."""
-        user = self.request.user
+        self.request.user
         track_id = self.request.query_params.get("track")
         album_id = self.request.query_params.get("album")
 
@@ -38,7 +38,7 @@ class CommentList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """✅ Any authenticated user can create comments (for now)."""
-        user = self.request.user
+        self.request.user
         # 🔒 Keep the role logic but disable it for submission
         # if not user.profile.is_composer:
         #     raise NotFound()  # ✅ Pretend the feature doesn’t exist
@@ -62,7 +62,7 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
         ✅ Only owners can edit/delete their comments.
         🔒 Reviewers & Unauthorized Users logic is DISABLED for now.
         """
-        user = self.request.user
+        self.request.user
         comment_id = self.kwargs["pk"]
 
         try:

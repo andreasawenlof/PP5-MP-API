@@ -13,9 +13,7 @@ from .serializers import (
 )
 from mp_api.permissions import (
     IsComposerOrOwner,
-    IsReviewer,
     IsComposerOrReviewer,
-    IsOwnerOrReadOnly,
 )
 
 
@@ -105,13 +103,13 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
         raise NotFound()  # ✅ Acts like the track never existed (NO 403!)
 
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
+        self.get_object()
         if request.user.profile.is_reviewer:
             raise NotFound()  # ✅ Reviewers CANNOT edit
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        self.get_object()
         if request.user.profile.is_reviewer:
             raise NotFound()  # ✅ Reviewers CANNOT delete
         return super().destroy(request, *args, **kwargs)

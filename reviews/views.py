@@ -2,7 +2,7 @@ from rest_framework import generics
 from .models import Review, ReviewHistory
 from .serializers import ReviewSerializer, ReviewHistorySerializer
 from rest_framework.permissions import IsAuthenticated
-from mp_api.permissions import IsOwnerOrReadOnly, IsComposerOrOwner
+from mp_api.permissions import IsComposerOrOwner
 
 
 class ReviewListCreate(generics.ListCreateAPIView):

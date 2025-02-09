@@ -18,8 +18,8 @@ This API is built to scale with additional features like **album bulk updates, r
 
 -   **Tracks:** CRUD operations with status management
 -   **Comments:** Threaded discussions per track
--   **Review System:** (Planned) Feedback & revision tracking for composers
--   **Albums:** Group tracks, add cover art, and manage updates
+-   **Review System:** (Future Feature) Feedback & revision tracking for composers
+-   **Albums:** (Future feature) Group tracks, add cover art, and manage updates
 -   **Filtering & Search:** Quickly locate tracks based on metadata
 -   **Authentication:** Secure JWT-based authentication with role-based permissions
 
@@ -30,8 +30,8 @@ This API is built to scale with additional features like **album bulk updates, r
 -   **Backend:** Django 4.2, Django REST Framework
 -   **Database:** PostgreSQL
 -   **Authentication:** dj-rest-auth with JWT tokens
--   **Deployment:** (Specify if deployed)
--   **Other Tools:** Django Filters, Django CORS Headers, Celery (if applicable)
+-   **Deployment:** Heroku
+-   **Other Tools:** Django Filters, Django CORS Headers
 
 ---
 
@@ -98,22 +98,7 @@ This project has been tested using **automated unit tests** and **manual API tes
 
 ✅ Authentication (Login/Logout) works correctly
 ✅ CRUD operations for Tracks & Comments
-✅ Role-based access (Composers vs. Reviewers)
 ✅ Non-authorized users **cannot** access or modify tracks
-✅ Tracks list displays correctly with filters & search
-
----
-
-## 🔥 Known Issues
-
-1. **Refresh Tokens**:
-
-    - Manually fetching refresh tokens works in tests, but automatic renewal causes session issues.
-    - **Solution:** Access tokens are set to **30 days** instead.
-
-2. **Instrument Editing Issue**:
-    - Tracks can be **created** with instruments but **not edited** with them currently.
-    - **Planned Fix:** Future patch.
 
 ---
 
@@ -126,18 +111,8 @@ This project has been tested using **automated unit tests** and **manual API tes
 
 ---
 
-## 📌 API Endpoints
-
-(TBD: Auto-generate API documentation from Django REST Framework or Swagger)
-
----
-
 ## 🎯 Conclusion
 
-This API is built for **speed, efficiency, and scalability**, ensuring a smooth workflow for composers and reviewers in the music industry. The backend is structured with **future growth in mind**, making it easy to add new features as needed.
+This API is built for **speed, efficiency, and scalability**, ensuring a smooth workflow for composers and producers in the music industry. The backend is structured with **future growth in mind**, making it easy to add new features as needed.
 
 ---
-
-**✅ Backend DONE. Next Up: Frontend README.**
-
-🔥 Let’s go.
