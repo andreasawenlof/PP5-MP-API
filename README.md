@@ -167,9 +167,9 @@ This project has been tested using **automated unit tests** and **manual API tes
 
 ### **Tested Scenarios:**
 
-✅ Authentication (Login/Logout) works correctly
-✅ CRUD operations for Tracks & Comments
-✅ Non-authorized users **cannot** access or modify tracks
+✅ Authentication (Login/Logout) works correctly.  
+✅ CRUD operations for Tracks & Comments.  
+✅ Non-authorized users **cannot** access or modify tracks.
 
 ---
 
