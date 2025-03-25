@@ -99,7 +99,7 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
         if user.profile.is_reviewer and obj.status == "ready_for_review":
             return obj
 
-        return obj  # ✅ Acts like the track never existed (NO 403!)
+        return obj
 
     def update(self, request, *args, **kwargs):
         self.get_object()

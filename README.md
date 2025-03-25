@@ -23,7 +23,11 @@ This API is built to scale with additional features like **album bulk updates, r
 -   **Filtering & Search:** Quickly locate tracks based on metadata
 -   **Authentication:** Secure JWT-based authentication with role-based permissions
 
----
+## 🧩 Entity Relationship Diagram (ERD)
+
+The following diagram outlines the core models and their relationships within the Track Management API, including user accounts, tracks, albums, comments, and associated metadata.
+
+![ERD](documents/erd.png)
 
 ## 🛠 Tech Stack
 
@@ -83,6 +87,73 @@ python manage.py runserver
 ```
 
 ---
+
+## ☁️ Deployment (Heroku)
+
+### 🔧 1. Create a New App on Heroku
+
+-   Go to [Heroku Dashboard](https://dashboard.heroku.com/)
+-   Click **New → Create new app**
+-   Name your app and choose your region
+
+### 🛠 2. Set Up Environment Variables
+
+In your app’s **Settings → Reveal Config Vars**, add:
+
+```env
+SECRET_KEY=your-django-secret-key
+DEBUG=False
+DATABASE_URL=auto-generated-by-heroku
+ALLOWED_HOSTS=your-app-name.herokuapp.com
+CORS_ALLOWED_ORIGINS=https://your-frontend-url.com
+```
+
+### 🥍 3. Add Heroku PostgreSQL
+
+```bash
+heroku addons:create heroku-postgresql:hobby-dev
+```
+
+### 📦 4. Prepare Your Code for Deployment
+
+Install Gunicorn:
+
+```bash
+pip install gunicorn
+pip freeze > requirements.txt
+```
+
+Create a `Procfile` in your root directory and add:
+
+```bash
+web: gunicorn mp_api.wsgi --log-file -
+```
+
+Commit your changes:
+
+```bash
+git add .
+git commit -m "Prepare for Heroku deployment"
+```
+
+### ✨ 5. Push to Heroku
+
+```bash
+heroku git:remote -a your-heroku-app-name
+git push heroku main
+```
+
+### 🔄 6. Run Migrations on Heroku
+
+```bash
+heroku run python manage.py migrate
+```
+
+### 🔐 7. (Optional) Create a Superuser
+
+```bash
+heroku run python manage.py createsuperuser
+```
 
 ## ✅ Testing
 
