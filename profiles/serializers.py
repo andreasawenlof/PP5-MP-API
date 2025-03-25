@@ -35,6 +35,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         if not instance.avatar:
             data["avatar"] = (
-                "https://res.cloudinary.com/YOUR_CLOUDINARY_NAME/image/upload/vDEFAULT_IMAGE_ID.jpg"
+                "https://res.cloudinary.com/YOUR_CLOUDINARY_NAME/image/upload/DEFAULT_IMAGE_ID.jpg"
             )
         return data

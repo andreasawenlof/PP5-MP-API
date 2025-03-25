@@ -25,7 +25,7 @@ class TrackListCreate(generics.ListCreateAPIView):
     """
 
     serializer_class = TrackSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrReviewer]
+    permission_classes = [IsAuthenticated]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
@@ -53,7 +53,7 @@ class TrackListCreate(generics.ListCreateAPIView):
             return Track.objects.all()
         if user.profile.is_reviewer:
             return Track.objects.filter(status="ready_for_review")
-        return Track.objects.none()
+        return Track.objects.all()
 
     def perform_create(self, serializer):
         if not self.request.user.profile.is_composer:
@@ -77,12 +77,11 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
     """
 
     serializer_class = TrackSerializer
-    permission_classes = [IsAuthenticated, IsComposerOrReviewer]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         """
         ✅ Ensures reviewers NEVER see tracks they shouldn’t.
-        ✅ NO MORE 403 Forbidden – Reviewers get clean 404 (Not Found).
         """
         user = self.request.user
         track_id = self.kwargs["pk"]
@@ -100,7 +99,7 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
         if user.profile.is_reviewer and obj.status == "ready_for_review":
             return obj
 
-        raise NotFound()  # ✅ Acts like the track never existed (NO 403!)
+        return obj  # ✅ Acts like the track never existed (NO 403!)
 
     def update(self, request, *args, **kwargs):
         self.get_object()

@@ -87,13 +87,13 @@ class Track(models.Model):
         related_name="mood_tracks",
     )  # ✅ Updated related_name
 
-    album = models.ForeignKey(
-        Album,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="album_tracks",
-    )
+    # album = models.ForeignKey(
+    #     Album,
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     blank=True,
+    #     related_name="album_tracks",
+    # )
     instruments = models.ManyToManyField(
         Instrument, blank=True, related_name="instrument_tracks"
     )

@@ -31,10 +31,10 @@ class ProjectTypeSerializer(serializers.ModelSerializer):
 class TrackSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.username")
 
-    album = serializers.PrimaryKeyRelatedField(
-        queryset=Album.objects.all(), allow_null=True
-    )
-    album_name = serializers.CharField(source="album.title", read_only=True)
+    # album = serializers.PrimaryKeyRelatedField(
+    #     queryset=Album.objects.all(), allow_null=True
+    # )
+    # album_name = serializers.CharField(source="album.title", read_only=True)
 
     instruments = serializers.PrimaryKeyRelatedField(
         queryset=Instrument.objects.all(), many=True, required=False
@@ -77,8 +77,8 @@ class TrackSerializer(serializers.ModelSerializer):
             "id",
             "owner",
             "title",
-            "album",
-            "album_name",
+            # "album",
+            # "album_name",
             "instruments",
             "instrument_names",
             "genre",
@@ -124,9 +124,9 @@ class BulkTrackUpdateSerializer(serializers.Serializer):
     vocals_status = serializers.ChoiceField(
         choices=Track.VOCALS_STATUS_CHOICES, allow_null=True, required=False
     )
-    album = serializers.PrimaryKeyRelatedField(
-        queryset=Album.objects.all(), allow_null=True, required=False
-    )
+    # album = serializers.PrimaryKeyRelatedField(
+    #     queryset=Album.objects.all(), allow_null=True, required=False
+    # )
     genre = serializers.PrimaryKeyRelatedField(
         queryset=Genre.objects.all(), allow_null=True, required=False
     )
