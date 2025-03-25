@@ -178,10 +178,6 @@ cookies.txt
 staticfiles/
 models_dump.json
 models_dump.txt
-erd.dot
-erd.png
-erd.json
-erd.svg
 models.txt
 exportmodels.py
 .flake8

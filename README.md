@@ -27,7 +27,7 @@ This API is built to scale with additional features like **album bulk updates, r
 
 The following diagram outlines the core models and their relationships within the Track Management API, including user accounts, tracks, albums, comments, and associated metadata.
 
-![ERD](documents/erd.png)
+![ERD](documents/erd/erd.png)
 
 ## 🛠 Tech Stack
 
