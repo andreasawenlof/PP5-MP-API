@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import dj_database_url
 from datetime import timedelta
+import cloudinary
 
 import os
 
@@ -24,6 +25,10 @@ if os.path.exists("env.py"):
 CLOUDINARY_STORAGE = {"CLOUDINARY_URL": os.environ.get("CLOUDINARY_URL")}
 MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+cloudinary.config(
+    secure=True
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
